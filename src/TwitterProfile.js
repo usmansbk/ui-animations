@@ -60,7 +60,7 @@ export default function TwitterProfile() {
     <View style={styles.container} {...panResponder.panHandlers}>
       <StatusBar backgroundColor={user.color} barStyle="light-content" />
       <Animated.View style={[styles.header]}>
-        <Animated.View style={[styles.imageHeader]}>
+        <Animated.View style={[styles.imageHeader, {}]}>
           <Image source={user.header} style={styles.image} />
         </Animated.View>
         <View style={styles.appBar}>
