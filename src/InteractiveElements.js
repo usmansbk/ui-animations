@@ -1,6 +1,6 @@
 // https://dribbble.com/shots/14796756-CSS-UI-Interactive-Elements?showSimilarShots=true&_=1608623407187
 
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   View,
   Animated,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -40,6 +41,8 @@ export default function InteractiveElements() {
   const [colorIndex, setColorIndex] = useState(0);
   const [fullDay, setFullDay] = useState(false);
 
+  const animation = useRef(new Animated.Value(0));
+
   const onChangeName = (value) => setName(value);
   const onChangeColor = (newIndex) => setColorIndex(newIndex);
   const setToday = () => setDate(moment());
@@ -62,10 +65,13 @@ export default function InteractiveElements() {
         <View style={styles.row}>
           {colors.map((_, index) => {
             return (
-              <TouchableWithoutFeedback
-                key={index}
-                onPress={() => onChangeColor(index)}>
-                <View style={styles.ballContainer}>
+              <ScrollView
+                scrollEnabled={false}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.ballContainer}>
+                <TouchableWithoutFeedback
+                  key={index}
+                  onPress={() => onChangeColor(index)}>
                   <View
                     style={[
                       styles.ball,
@@ -74,9 +80,20 @@ export default function InteractiveElements() {
                       },
                     ]}
                   />
-                  {index === colorIndex && <View style={styles.indicator} />}
-                </View>
-              </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
+                <View
+                  style={[
+                    styles.indicator,
+                    {
+                      transform: [
+                        {
+                          translateX: index === colorIndex ? 0 : -BALL_HEIGHT,
+                        },
+                      ],
+                    },
+                  ]}
+                />
+              </ScrollView>
             );
           })}
         </View>
