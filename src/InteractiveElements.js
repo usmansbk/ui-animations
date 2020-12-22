@@ -101,30 +101,22 @@ export default function InteractiveElements() {
         </View>
 
         <View style={styles.buttons}>
-          <Button
-            text="Today"
-            onPress={setToday}
-            underlayColor={getColor(colorIndex, 0.4)}
-          />
+          <Button text="Today" onPress={setToday} colorIndex={colorIndex} />
           <Button
             text="Tomorrow"
             onPress={setTomorrow}
-            underlayColor={getColor(colorIndex, 0.4)}
+            colorIndex={colorIndex}
           />
-          <Button
-            text="+1"
-            onPress={nextDay}
-            underlayColor={getColor(colorIndex, 0.4)}
-          />
+          <Button text="+1" onPress={nextDay} colorIndex={colorIndex} />
         </View>
       </View>
     </View>
   );
 }
 
-const Button = ({text, onPress, underlayColor}) => (
+const Button = ({text, onPress, colorIndex}) => (
   <TouchableHighlight
-    underlayColor={underlayColor}
+    underlayColor={getColor(colorIndex, 0.4)}
     style={styles.button}
     onPress={onPress}>
     <Text style={[styles.buttonText]}>{text}</Text>
