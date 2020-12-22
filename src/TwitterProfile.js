@@ -73,12 +73,45 @@ export default function TwitterProfile() {
             }),
           },
         ]}>
-        {/* <Animated.View style={[styles.imageHeader, {}]}>
+        <Animated.View
+          style={[
+            styles.imageHeader,
+            {
+              opacity: scrollY.interpolate({
+                inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+              }),
+              transform: [
+                {
+                  translateY: scrollY.interpolate({
+                    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+                    outputRange: [0, -(MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT)],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+            },
+          ]}>
           <Image source={user.header} style={styles.image} />
-        </Animated.View> */}
+        </Animated.View>
         <View style={styles.appBar}>
           <IconButton name="arrow-left" />
-          <Animated.View style={[styles.headerContent]}>
+          <Animated.View
+            style={[
+              styles.headerContent,
+              {
+                opacity: scrollY.interpolate({
+                  inputRange: [
+                    0,
+                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT - 0.99,
+                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+                  ],
+                  outputRange: [0, 0, 1],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ]}>
             <Text style={styles.title}>{user.fullname}</Text>
             <Text style={styles.subtitle}>{user.tweetsCount} Tweets</Text>
           </Animated.View>
