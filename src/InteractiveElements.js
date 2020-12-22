@@ -132,17 +132,31 @@ export default function InteractiveElements() {
   );
 }
 
-const Time = ({time, visible}) => (
-  <View style={styles.timeContainer}>
-    <AnimatedIcon
-      style={[styles.arrow]}
-      color="gray"
-      name="arrow-up"
-      size={20}
-    />
-    <Text style={styles.pickerText}>{time}</Text>
-  </View>
-);
+const Time = ({time, visible}) => {
+  if (!visible) {
+    return null;
+  }
+  return (
+    <View style={styles.timeContainer}>
+      <AnimatedIcon
+        style={[
+          styles.arrow,
+          {
+            transform: [
+              {
+                rotateZ: '90deg',
+              },
+            ],
+          },
+        ]}
+        color="gray"
+        name="arrow-up"
+        size={20}
+      />
+      <Text style={styles.pickerText}>{time}</Text>
+    </View>
+  );
+};
 
 const Button = ({text, onPress, colorIndex}) => (
   <TouchableHighlight
