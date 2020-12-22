@@ -101,13 +101,16 @@ export default function InteractiveElements() {
         </View>
 
         <View style={styles.buttons}>
-          <Button text="Today" onPress={setToday} colorIndex={colorIndex} />
-          <Button
-            text="Tomorrow"
-            onPress={setTomorrow}
-            colorIndex={colorIndex}
-          />
-          <Button text="+1" onPress={nextDay} colorIndex={colorIndex} />
+          <View style={styles.buttonRow}>
+            <Button text="Today" onPress={setToday} colorIndex={colorIndex} />
+            <Button
+              text="Tomorrow"
+              onPress={setTomorrow}
+              colorIndex={colorIndex}
+            />
+            <Button text="+1" onPress={nextDay} colorIndex={colorIndex} />
+          </View>
+          <Switch text="Full Day" />
         </View>
       </View>
     </View>
@@ -122,6 +125,23 @@ const Button = ({text, onPress, colorIndex}) => (
     <Text style={[styles.buttonText]}>{text}</Text>
   </TouchableHighlight>
 );
+
+const Switch = ({text, colorIndex}) => {
+  return (
+    <View style={styles.switchContainer}>
+      <Text style={styles.label}>{text}</Text>
+      <View
+        style={[
+          styles.switchButton,
+          {
+            backgroundColor: getColor(colorIndex),
+          },
+        ]}>
+        <View style={styles.toggle} />
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -166,18 +186,23 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   button: {
     paddingVertical: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     backgroundColor: '#d3d3d3',
     margin: 8,
+    marginHorizontal: 4,
     borderRadius: 4,
   },
   buttonText: {
     fontSize: 16,
     color: 'gray',
     fontWeight: 'bold',
+  },
+  buttonRow: {
+    flexDirection: 'row',
   },
   row: {
     flexDirection: 'row',
@@ -195,6 +220,26 @@ const styles = StyleSheet.create({
   },
   indicator: {
     position: 'absolute',
+    width: SMALL_BALL_HEIGHT,
+    height: SMALL_BALL_HEIGHT,
+    borderRadius: SMALL_BALL_HEIGHT / 2,
+    backgroundColor: 'white',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  switchButton: {
+    marginLeft: 8,
+    borderRadius: (SMALL_BALL_HEIGHT + 8) / 2,
+    height: SMALL_BALL_HEIGHT + 4,
+    width: 50,
+    justifyContent: 'center',
+  },
+  toggle: {
+    position: 'absolute',
+    left: 0,
+    margin: 3,
     width: SMALL_BALL_HEIGHT,
     height: SMALL_BALL_HEIGHT,
     borderRadius: SMALL_BALL_HEIGHT / 2,
