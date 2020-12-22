@@ -276,7 +276,6 @@ const Button = ({text, onPress, colorIndex}) => (
 const Switch = ({
   text,
   colorIndex,
-  previousColorIndex,
   value,
   onPress,
   animation = new Animated.Value(0),
