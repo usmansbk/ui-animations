@@ -281,22 +281,14 @@ const Switch = ({
   onPress,
   animation = new Animated.Value(0),
 }) => {
-  // const colorInterpolate = animation.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: [
-  //     getColor(previousColorIndex),
-  //     value ? getColor(colorIndex) : '#d3d3d3',
-  //   ],
-  //   extrapolate: 'clamp',
-  // });
-  const colorInterpolate = value ? getColor(colorIndex) : '#d3d3d3';
+  const color = value ? getColor(colorIndex) : '#d3d3d3';
 
   const toggleStyle = {
-    borderColor: colorInterpolate,
+    borderColor: color,
   };
 
   const backgroundColorStyle = {
-    backgroundColor: colorInterpolate,
+    backgroundColor: color,
   };
   return (
     <TouchableWithoutFeedback onPress={onPress}>
