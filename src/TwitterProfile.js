@@ -5,7 +5,7 @@ import {
   Text,
   Image,
   StatusBar,
-  TouchableNativeFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -76,30 +76,34 @@ export default function TwitterProfile() {
 }
 
 const StatButton = ({count, text}) => (
-  <View style={styles.textRow}>
-    <Text style={styles.count}>{count}</Text>
-    <Text style={styles.caption}>{text}</Text>
-  </View>
+  <TouchableOpacity>
+    <View style={styles.textRow}>
+      <Text style={styles.count}>{count}</Text>
+      <Text style={styles.caption}>{text}</Text>
+    </View>
+  </TouchableOpacity>
 );
 
 const Caption = ({text, icon, link}) => (
-  <View style={styles.textRow}>
-    <Icon
-      name={icon}
-      size={14}
-      color={colors.gray}
-      style={styles.captionIcon}
-    />
-    <Text style={[styles.caption, link ? styles.link : undefined]}>{text}</Text>
-  </View>
+  <TouchableOpacity disabled={!link}>
+    <View style={styles.textRow}>
+      <Icon
+        name={icon}
+        size={14}
+        color={colors.gray}
+        style={styles.captionIcon}
+      />
+      <Text style={[styles.caption, link ? styles.link : undefined]}>
+        {text}
+      </Text>
+    </View>
+  </TouchableOpacity>
 );
 
 const Button = ({text}) => (
-  <TouchableNativeFeedback>
-    <View style={styles.button}>
-      <Text style={styles.buttonText}>{text}</Text>
-    </View>
-  </TouchableNativeFeedback>
+  <TouchableOpacity style={styles.button}>
+    <Text style={styles.buttonText}>{text}</Text>
+  </TouchableOpacity>
 );
 
 const Avatar = () => {
