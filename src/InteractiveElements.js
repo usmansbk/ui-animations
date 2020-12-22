@@ -10,6 +10,7 @@ import {
   View,
   Animated,
   ScrollView,
+  Easing,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -42,19 +43,38 @@ export default function InteractiveElements() {
   const [fullDay, setFullDay] = useState(false);
 
   const animation = useRef(new Animated.Value(0)).current;
+  const textAnimation = useRef(new Animated.Value(1)).current;
 
-  const onChangeName = (value) => setName(value);
+  const onChangeName = (value) => {
+    setName(value);
+  };
   const onChangeColor = (newIndex) => {
     setColorIndex(newIndex);
     Animated.timing(animation, {
       toValue: newIndex,
       duration: 300,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   };
-  const setToday = () => setDate(moment());
-  const setTomorrow = () => setDate(moment().add(1, 'day'));
-  const nextDay = () => setDate(moment(date).add(1, 'day'));
+  const animateDate = (callback) => {
+    Animated.timing(textAnimation, {
+      toValue: 0.97,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      callback();
+      textAnimation.setValue(1);
+    });
+  };
+  const setToday = () => {
+    animateDate(() => setDate(moment()));
+  };
+  const setTomorrow = () => {
+    animateDate(() => setDate(moment().add(1, 'day')));
+  };
+  const nextDay = () => {
+    animateDate(() => setDate(moment(date).add(1, 'day')));
+  };
   const toggleFullday = () => setFullDay((prev) => !prev);
 
   return (
@@ -75,7 +95,6 @@ export default function InteractiveElements() {
               <Ball
                 onChangeColor={onChangeColor}
                 index={index}
-                currentIndex={colorIndex}
                 key={index}
                 animation={animation}
               />
@@ -101,9 +120,19 @@ export default function InteractiveElements() {
                   },
                 ]}>
                 <View style={styles.buttonRow}>
-                  <Text style={styles.pickerText}>
+                  <Animated.Text
+                    style={[
+                      styles.pickerText,
+                      {
+                        transform: [
+                          {
+                            scale: textAnimation,
+                          },
+                        ],
+                      },
+                    ]}>
                     {date.format('MMMM DD, YYYY')}
-                  </Text>
+                  </Animated.Text>
                   <Time time={date.format('HH:MM A')} visible={fullDay} />
                 </View>
                 <Icon name="chevron-down" size={20} color="gray" />
@@ -134,12 +163,7 @@ export default function InteractiveElements() {
   );
 }
 
-const Ball = ({
-  onChangeColor,
-  index,
-  currentIndex,
-  animation = new Animated.Value(0),
-}) => {
+const Ball = ({onChangeColor, index, animation = new Animated.Value(0)}) => {
   return (
     <ScrollView
       key={index}
