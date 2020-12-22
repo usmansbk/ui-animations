@@ -1,6 +1,6 @@
 import React from 'react';
-import InteractiveElements from './src/InteractiveElements';
+import TwitterProfile from './src/TwitterProfile';
 
 export default function App() {
-  return <InteractiveElements />;
+  return <TwitterProfile />;
 }
