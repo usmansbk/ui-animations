@@ -44,14 +44,12 @@ export default function InteractiveElements() {
   const animation = useRef(new Animated.Value(0)).current;
   const textAnimation = useRef(new Animated.Value(1)).current;
   const switchAnimation = useRef(new Animated.Value(fullDay ? 1 : 0)).current;
-  const previousColorIndex = useRef(colorIndex);
 
   const onChangeName = (value) => {
     setName(value);
   };
   const onChangeColor = (newIndex) => {
     setColorIndex(newIndex);
-    previousColorIndex.current = newIndex;
     Animated.timing(animation, {
       toValue: newIndex,
       duration: 200,
@@ -169,7 +167,6 @@ export default function InteractiveElements() {
             value={fullDay}
             onPress={toggleFullday}
             colorIndex={colorIndex}
-            previousColorIndex={previousColorIndex.current}
             animation={switchAnimation}
           />
         </View>
