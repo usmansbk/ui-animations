@@ -87,7 +87,7 @@ const tabs = ['Tweets', 'Tweets & replies', 'Media', 'Likes'];
 
 const Tabs = ({activeTab = 0}) => {
   return (
-    <View>
+    <View style={styles.bottom}>
       <View>
         <View style={styles.tabs}>
           {tabs.map((tab, index) => {
@@ -315,5 +315,8 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
     height,
+  },
+  bottom: {
+    flex: 1,
   },
 });
