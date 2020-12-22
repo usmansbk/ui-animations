@@ -112,7 +112,12 @@ export default function InteractiveElements() {
             />
             <Button text="+1" onPress={nextDay} colorIndex={colorIndex} />
           </View>
-          <Switch text="Full Day" value={fullDay} onPress={toggleFullday} />
+          <Switch
+            text="Full Day"
+            value={fullDay}
+            onPress={toggleFullday}
+            colorIndex={colorIndex}
+          />
         </View>
       </View>
     </View>
@@ -132,26 +137,18 @@ const Switch = ({text, colorIndex, value, onPress}) => {
   const toggleStyle = {
     left: !value ? 0 : null,
     right: value ? 0 : null,
+    borderColor: value ? getColor(colorIndex) : getColor(8),
+  };
+
+  const backgroundColorStyle = {
+    backgroundColor: value ? getColor(colorIndex) : '#d3d3d3',
   };
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.switchContainer}>
         <Text style={styles.label}>{text}</Text>
-        <View
-          style={[
-            styles.switchButton,
-            {
-              backgroundColor: getColor(colorIndex),
-            },
-          ]}>
-          <View
-            style={[
-              styles.toggle,
-              {
-                borderColor: getColor(colorIndex),
-              },
-              toggleStyle,
-            ]}>
+        <View style={[styles.switchButton, backgroundColorStyle]}>
+          <View style={[styles.toggle, toggleStyle]}>
             <View style={[styles.toggleShadow]} />
           </View>
         </View>
