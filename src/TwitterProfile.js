@@ -7,7 +7,6 @@ import {
   StatusBar,
   TouchableOpacity,
   TouchableNativeFeedback,
-  ScrollView,
   Dimensions,
   PanResponder,
   Animated,
@@ -32,9 +31,12 @@ const user = {
 };
 
 const ICON_SIZE = 32;
+const NAME_HEIGHT = 18;
 const AVATAR_SIZE = 86;
+const MIN_AVATAR_SIZE = 50;
 const MIN_HEADER_HEIGHT = 60;
 const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
+const BODY_HEIGHT = 400;
 const colors = {
   gray: '#73808a',
   blue: '#00acee',
@@ -71,6 +73,15 @@ export default function TwitterProfile() {
               outputRange: [MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT],
               extrapolate: 'clamp',
             }),
+            zIndex: scrollY.interpolate({
+              inputRange: [
+                0,
+                MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT - 0.99,
+                MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+              ],
+              outputRange: [0, 0, 1000],
+              extrapolate: 'clamp',
+            }),
           },
         ]}>
         <Animated.View
@@ -104,8 +115,15 @@ export default function TwitterProfile() {
                 opacity: scrollY.interpolate({
                   inputRange: [
                     0,
-                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT - 0.99,
-                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+                    MAX_HEADER_HEIGHT -
+                      MIN_HEADER_HEIGHT +
+                      MIN_AVATAR_SIZE +
+                      NAME_HEIGHT -
+                      0.99,
+                    MAX_HEADER_HEIGHT -
+                      MIN_HEADER_HEIGHT +
+                      MIN_AVATAR_SIZE +
+                      NAME_HEIGHT,
                   ],
                   outputRange: [0, 0, 1],
                   extrapolate: 'clamp',
@@ -119,7 +137,25 @@ export default function TwitterProfile() {
         </View>
       </Animated.View>
 
-      <View style={styles.body}>
+      <Animated.View
+        style={[
+          styles.body,
+          {
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [
+                    0,
+                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+                    BODY_HEIGHT,
+                  ],
+                  outputRange: [0, 0, -BODY_HEIGHT],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}>
         <Avatar animation={scrollY} />
         <View style={styles.bodyHeader}>
           <View style={styles.row}>
@@ -141,7 +177,7 @@ export default function TwitterProfile() {
             <StatButton count={user.followersCount} text="Followers" />
           </View>
         </View>
-      </View>
+      </Animated.View>
 
       <Tabs />
     </View>
@@ -212,7 +248,7 @@ const Button = ({text}) => (
 const Avatar = ({animation}) => {
   const size = animation.interpolate({
     inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
-    outputRange: [AVATAR_SIZE, 50],
+    outputRange: [AVATAR_SIZE, MIN_AVATAR_SIZE],
     extrapolate: 'clamp',
   });
   const top = animation.interpolate({
