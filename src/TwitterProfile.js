@@ -1,5 +1,12 @@
 import React from 'react';
-import {View, StyleSheet, Text, Image, StatusBar} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  StatusBar,
+  TouchableNativeFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
 const user = {
@@ -14,6 +21,7 @@ const user = {
   link: 'usmansbk.github.io',
   joined: 'November 2012',
   bio: 'Building get-schdlr.com mobile app. React/RN & AWS Enthusiast',
+  color: '#836953',
 };
 
 const MIN_HEADER_HEIGHT = 60;
@@ -22,7 +30,7 @@ const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2;
 export default function TwitterProfile() {
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#836953" barStyle="light-content" />
+      <StatusBar backgroundColor={user.color} barStyle="light-content" />
       <View style={styles.header}>
         <View style={styles.imageHeader}>
           <Image source={user.header} style={styles.image} />
@@ -38,11 +46,23 @@ export default function TwitterProfile() {
       </View>
 
       <View style={styles.body}>
-        <Avatar />
+        <View style={styles.row}>
+          <Avatar />
+          <View style={styles.left} />
+          <Button text="Edit profile" />
+        </View>
       </View>
     </View>
   );
 }
+
+const Button = ({text}) => (
+  <TouchableNativeFeedback>
+    <View style={styles.button}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </View>
+  </TouchableNativeFeedback>
+);
 
 const Avatar = () => {
   return (
@@ -67,7 +87,7 @@ const styles = StyleSheet.create({
   },
   header: {
     height: MAX_HEADER_HEIGHT,
-    backgroundColor: '#836953',
+    backgroundColor: user.color,
     justifyContent: 'flex-start',
   },
   appBar: {
@@ -125,5 +145,24 @@ const styles = StyleSheet.create({
     width: null,
     height: null,
     borderRadius: AVATAR_SIZE / 2,
+  },
+  left: {
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    padding: 6,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#73808a',
+    borderRadius: 20,
+    margin: 12,
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    color: '#73808a',
   },
 });
