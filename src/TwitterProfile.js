@@ -36,7 +36,7 @@ const AVATAR_SIZE = 86;
 const MIN_AVATAR_SIZE = 50;
 const MIN_HEADER_HEIGHT = 60;
 const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
-const BODY_HEIGHT = 400;
+const BODY_HEIGHT = height * 0.36;
 const colors = {
   gray: '#73808a',
   blue: '#00acee',
@@ -179,36 +179,34 @@ export default function TwitterProfile() {
         </View>
       </Animated.View>
 
-      <Animated.View
-        style={[
-          styles.bottom,
-          {
-            transform: [
-              {
-                translateY: scrollY.interpolate({
-                  inputRange: [
-                    0,
-                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
-                    BODY_HEIGHT,
-                  ],
-                  outputRange: [0, 0, -BODY_HEIGHT],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ],
-          },
-        ]}>
-        <Tabs />
-      </Animated.View>
+      <Tabs animation={scrollY} />
     </View>
   );
 }
 
 const tabs = ['Tweets', 'Tweets & replies', 'Media', 'Likes'];
 
-const Tabs = ({activeTab = 0}) => {
+const Tabs = ({activeTab = 0, animation}) => {
   return (
-    <View style={styles.bottom}>
+    <Animated.View
+      style={[
+        styles.bottom,
+        {
+          transform: [
+            {
+              translateY: animation.interpolate({
+                inputRange: [
+                  0,
+                  MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+                  BODY_HEIGHT,
+                ],
+                outputRange: [0, 0, -BODY_HEIGHT],
+                extrapolate: 'clamp',
+              }),
+            },
+          ],
+        },
+      ]}>
       <View>
         <View style={styles.tabs}>
           {tabs.map((tab, index) => {
@@ -230,7 +228,7 @@ const Tabs = ({activeTab = 0}) => {
         <View style={styles.tabIndicator} />
       </View>
       <View style={styles.scrollView} />
-    </View>
+    </Animated.View>
   );
 };
 
