@@ -43,12 +43,15 @@ export default function TwitterProfile() {
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => animation.extractOffset(),
+      //   onPanResponderGrant: () => animation.extractOffset(),
       onPanResponderMove: Animated.event(
         [
-          null,
           {
-            dy: animation,
+            nativeEvent: {
+              contentOffset: {
+                y: animation,
+              },
+            },
           },
         ],
         {useNativeDriver: false},
