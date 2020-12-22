@@ -64,11 +64,23 @@ export default function TwitterProfile() {
             <Caption icon="link" text={user.link} link />
             <Caption icon="calendar" text={`Joined ${user.joined}`} />
           </View>
+
+          <View style={styles.statsRow}>
+            <StatButton count={user.followingCount} text="Following" />
+            <StatButton count={user.followersCount} text="Followers" />
+          </View>
         </View>
       </View>
     </View>
   );
 }
+
+const StatButton = ({count, text}) => (
+  <View style={styles.textRow}>
+    <Text style={styles.count}>{count}</Text>
+    <Text style={styles.caption}>{text}</Text>
+  </View>
+);
 
 const Caption = ({text, icon, link}) => (
   <View style={styles.textRow}>
@@ -222,5 +234,13 @@ const styles = StyleSheet.create({
   },
   link: {
     color: '#1a8dc2',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    marginVertical: 8,
+  },
+  count: {
+    fontWeight: 'bold',
+    marginRight: 4,
   },
 });
