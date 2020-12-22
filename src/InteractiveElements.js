@@ -81,7 +81,7 @@ export default function InteractiveElements() {
             style={[
               styles.picker,
               {
-                backgroundColor: getColor(colorIndex, 0.8),
+                backgroundColor: getColor(colorIndex, 0.6),
               },
             ]}>
             <TouchableWithoutFeedback>
@@ -137,7 +137,14 @@ const Switch = ({text, colorIndex}) => {
             backgroundColor: getColor(colorIndex),
           },
         ]}>
-        <View style={styles.toggle} />
+        <View
+          style={[
+            styles.toggle,
+            {
+              borderColor: getColor(colorIndex),
+            },
+          ]}
+        />
       </View>
     </View>
   );
@@ -230,19 +237,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   switchButton: {
-    marginLeft: 8,
-    borderRadius: (SMALL_BALL_HEIGHT + 8) / 2,
-    height: SMALL_BALL_HEIGHT + 4,
-    width: 50,
     justifyContent: 'center',
+    marginLeft: 8,
+    height: BALL_HEIGHT,
+    width: (BALL_HEIGHT - BALL_HEIGHT * 0.1) * 2,
+    borderRadius: BALL_HEIGHT / 2,
   },
   toggle: {
     position: 'absolute',
     left: 0,
-    margin: 3,
-    width: SMALL_BALL_HEIGHT,
-    height: SMALL_BALL_HEIGHT,
-    borderRadius: SMALL_BALL_HEIGHT / 2,
+    width: BALL_HEIGHT,
+    height: BALL_HEIGHT,
+    borderRadius: BALL_HEIGHT / 2,
     backgroundColor: 'white',
+    borderWidth: 2,
   },
 });
