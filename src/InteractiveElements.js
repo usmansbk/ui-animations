@@ -44,22 +44,24 @@ export default function InteractiveElements() {
   const animation = useRef(new Animated.Value(0)).current;
   const textAnimation = useRef(new Animated.Value(1)).current;
   const switchAnimation = useRef(new Animated.Value(fullDay ? 1 : 0)).current;
+  const previousColorIndex = useRef(colorIndex);
 
   const onChangeName = (value) => {
     setName(value);
   };
   const onChangeColor = (newIndex) => {
     setColorIndex(newIndex);
+    previousColorIndex.current = newIndex;
     Animated.timing(animation, {
       toValue: newIndex,
-      duration: 300,
+      duration: 200,
       useNativeDriver: true,
     }).start();
   };
   const animateDate = (callback) => {
     Animated.timing(textAnimation, {
       toValue: 0.97,
-      duration: 300,
+      duration: 200,
       useNativeDriver: true,
     }).start(() => {
       callback();
@@ -80,7 +82,7 @@ export default function InteractiveElements() {
     setFullDay((prev) => !prev);
     Animated.timing(switchAnimation, {
       toValue: prevValue ? 0 : 1,
-      duration: 300,
+      duration: 200,
       useNativeDriver: true,
     }).start();
   };
@@ -167,6 +169,8 @@ export default function InteractiveElements() {
             value={fullDay}
             onPress={toggleFullday}
             colorIndex={colorIndex}
+            previousColorIndex={previousColorIndex.current}
+            animation={switchAnimation}
           />
         </View>
       </View>
@@ -269,25 +273,54 @@ const Button = ({text, onPress, colorIndex}) => (
   </TouchableHighlight>
 );
 
-const Switch = ({text, colorIndex, value, onPress}) => {
+const Switch = ({
+  text,
+  colorIndex,
+  previousColorIndex,
+  value,
+  onPress,
+  animation = new Animated.Value(0),
+}) => {
+  // const colorInterpolate = animation.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: [
+  //     getColor(previousColorIndex),
+  //     value ? getColor(colorIndex) : '#d3d3d3',
+  //   ],
+  //   extrapolate: 'clamp',
+  // });
+  const colorInterpolate = value ? getColor(colorIndex) : '#d3d3d3';
+
   const toggleStyle = {
-    left: !value ? 0 : null,
-    right: value ? 0 : null,
-    borderColor: value ? getColor(colorIndex) : getColor(8),
+    borderColor: colorInterpolate,
   };
 
   const backgroundColorStyle = {
-    backgroundColor: value ? getColor(colorIndex) : '#d3d3d3',
+    backgroundColor: colorInterpolate,
   };
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.switchContainer}>
         <Text style={styles.label}>{text}</Text>
-        <View style={[styles.switchButton, backgroundColorStyle]}>
-          <View style={[styles.toggle, toggleStyle]}>
+        <Animated.View style={[styles.switchButton, backgroundColorStyle]}>
+          <Animated.View
+            style={[
+              styles.toggle,
+              toggleStyle,
+              {
+                transform: [
+                  {
+                    translateX: animation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, BALL_HEIGHT - BALL_HEIGHT * 0.2],
+                    }),
+                  },
+                ],
+              },
+            ]}>
             <View style={[styles.toggleShadow]} />
-          </View>
-        </View>
+          </Animated.View>
+        </Animated.View>
       </View>
     </TouchableWithoutFeedback>
   );
