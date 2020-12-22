@@ -8,8 +8,12 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
   View,
+  Animated,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+
+const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 
 const INPUT_HEIGHT = 50;
 const BALL_HEIGHT = 32;
@@ -94,9 +98,13 @@ export default function InteractiveElements() {
                     borderColor: getColor(colorIndex),
                   },
                 ]}>
-                <Text style={styles.pickerText}>
-                  {date.format('MMMM DD, YYYY')}
-                </Text>
+                <View style={styles.buttonRow}>
+                  <Text style={styles.pickerText}>
+                    {date.format('MMMM DD, YYYY')}
+                  </Text>
+                  <Time time={date.format('HH:MM A')} visible={fullDay} />
+                </View>
+                <Icon name="chevron-down" size={20} color="gray" />
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -123,6 +131,18 @@ export default function InteractiveElements() {
     </View>
   );
 }
+
+const Time = ({time, visible}) => (
+  <View style={styles.timeContainer}>
+    <AnimatedIcon
+      style={[styles.arrow]}
+      color="gray"
+      name="arrow-up"
+      size={20}
+    />
+    <Text style={styles.pickerText}>{time}</Text>
+  </View>
+);
 
 const Button = ({text, onPress, colorIndex}) => (
   <TouchableHighlight
@@ -193,6 +213,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   pickerText: {
     fontSize: 18,
@@ -268,5 +289,12 @@ const styles = StyleSheet.create({
     height: BALL_HEIGHT - 4,
     backgroundColor: 'white',
     elevation: 4,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  arrow: {
+    marginHorizontal: 4,
   },
 });
