@@ -5,7 +5,8 @@ import Icon from 'react-native-vector-icons/Feather';
 const user = {
   fullname: 'Usman Suleiman',
   handle: '@usbkay',
-  picture: require('../assets/twitter-header.jpeg'),
+  header: require('../assets/twitter-header.jpeg'),
+  avatar: require('../assets/me.jpeg'),
   tweetsCount: '4,141',
   followingCount: 206,
   followersCount: 316,
@@ -24,7 +25,7 @@ export default function TwitterProfile() {
       <StatusBar backgroundColor="#836953" barStyle="light-content" />
       <View style={styles.header}>
         <View style={styles.imageHeader}>
-          <Image source={user.picture} style={styles.image} />
+          <Image source={user.header} style={styles.image} />
         </View>
         <View style={styles.appBar}>
           <IconButton name="arrow-left" />
@@ -35,9 +36,21 @@ export default function TwitterProfile() {
           <IconButton name="more-vertical" />
         </View>
       </View>
+
+      <View style={styles.body}>
+        <Avatar />
+      </View>
     </View>
   );
 }
+
+const Avatar = () => {
+  return (
+    <View style={[styles.avatar]}>
+      <Image source={user.avatar} style={styles.avatarImage} />
+    </View>
+  );
+};
 
 const IconButton = ({name}) => (
   <View style={styles.icon}>
@@ -46,6 +59,7 @@ const IconButton = ({name}) => (
 );
 
 const ICON_SIZE = 32;
+const AVATAR_SIZE = 86;
 
 const styles = StyleSheet.create({
   container: {
@@ -60,7 +74,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
   },
   icon: {
     backgroundColor: 'rgba(0, 0, 0, .3)',
@@ -94,5 +108,22 @@ const styles = StyleSheet.create({
   subtitle: {
     color: 'white',
     fontSize: 16,
+  },
+  body: {},
+  avatar: {
+    top: -AVATAR_SIZE / 3,
+    left: 8,
+    position: 'absolute',
+    height: AVATAR_SIZE,
+    width: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
+    borderColor: 'white',
+    borderWidth: 4,
+  },
+  avatarImage: {
+    flex: 1,
+    width: null,
+    height: null,
+    borderRadius: AVATAR_SIZE / 2,
   },
 });
