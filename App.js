@@ -1,6 +1,6 @@
 import React from 'react';
-import {View} from 'react-native';
+import InteractiveElements from './src/InteractiveElements';
 
 export default function App() {
-  return <View></View>;
+  return <InteractiveElements />;
 }
