@@ -143,8 +143,9 @@ const Switch = ({text, colorIndex}) => {
             {
               borderColor: getColor(colorIndex),
             },
-          ]}
-        />
+          ]}>
+          <View style={[styles.toggleShadow]} />
+        </View>
       </View>
     </View>
   );
@@ -235,6 +236,7 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   switchButton: {
     justifyContent: 'center',
@@ -246,10 +248,19 @@ const styles = StyleSheet.create({
   toggle: {
     position: 'absolute',
     left: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
     width: BALL_HEIGHT,
     height: BALL_HEIGHT,
     borderRadius: BALL_HEIGHT / 2,
     backgroundColor: 'white',
     borderWidth: 2,
+  },
+  toggleShadow: {
+    borderRadius: (BALL_HEIGHT - 4) / 2,
+    width: BALL_HEIGHT - 4,
+    height: BALL_HEIGHT - 4,
+    backgroundColor: 'white',
+    elevation: 4,
   },
 });
