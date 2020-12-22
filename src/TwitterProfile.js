@@ -6,6 +6,7 @@ import {
   Image,
   StatusBar,
   TouchableOpacity,
+  TouchableNativeFeedback,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -28,6 +29,7 @@ const MIN_HEADER_HEIGHT = 60;
 const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
 const colors = {
   gray: '#73808a',
+  blue: '#00acee',
 };
 
 export default function TwitterProfile() {
@@ -71,9 +73,38 @@ export default function TwitterProfile() {
           </View>
         </View>
       </View>
+
+      <TabBar />
     </View>
   );
 }
+
+const tabs = ['Tweets', 'Tweets & replies', 'Media', 'Likes'];
+
+const TabBar = ({activeTab = 0}) => {
+  return (
+    <View>
+      <View style={styles.tabs}>
+        {tabs.map((tab, index) => {
+          return (
+            <TouchableNativeFeedback key={index}>
+              <View style={styles.tab}>
+                <Text
+                  style={[
+                    styles.tabLabel,
+                    activeTab === index ? styles.activeTabLabel : undefined,
+                  ]}>
+                  {tab}
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
+          );
+        })}
+      </View>
+      <View style={styles.tabIndicator} />
+    </View>
+  );
+};
 
 const StatButton = ({count, text}) => (
   <TouchableOpacity>
@@ -241,10 +272,31 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    marginVertical: 8,
+    marginTop: 8,
+    marginBottom: 4,
   },
   count: {
     fontWeight: 'bold',
     marginRight: 4,
+  },
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  tabLabel: {
+    fontWeight: 'bold',
+    color: colors.gray,
+    fontSize: 16,
+  },
+  tab: {
+    padding: 12,
+  },
+  activeTabLabel: {
+    color: colors.blue,
+  },
+  tabIndicator: {
+    height: 3,
+    width: 86,
+    backgroundColor: colors.blue,
   },
 });
