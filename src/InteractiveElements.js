@@ -47,7 +47,7 @@ export default function InteractiveElements() {
   const onChangeColor = (newIndex) => {
     setColorIndex(newIndex);
     Animated.timing(animation, {
-      toValue: 1,
+      toValue: newIndex,
       duration: 300,
       useNativeDriver: false,
     }).start();
@@ -72,43 +72,13 @@ export default function InteractiveElements() {
         <View style={styles.row}>
           {colors.map((_, index) => {
             return (
-              <ScrollView
+              <Ball
+                onChangeColor={onChangeColor}
+                index={index}
+                currentIndex={colorIndex}
                 key={index}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.ballContainer}>
-                <TouchableWithoutFeedback onPress={() => onChangeColor(index)}>
-                  <View
-                    style={[
-                      styles.ball,
-                      {
-                        backgroundColor: getColor(index),
-                      },
-                    ]}
-                  />
-                </TouchableWithoutFeedback>
-                <Animated.View
-                  style={[
-                    styles.indicator,
-                    {
-                      transform: [
-                        {
-                          // translateX: index === colorIndex ? 0 : -BALL_HEIGHT,
-                          translateX: animation.interpolate({
-                            inputRange: [0, 1],
-
-                            outputRange: [
-                              (index - 1) * BALL_HEIGHT,
-                              index * BALL_HEIGHT,
-                            ],
-                            extrapolate: 'clamp',
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                />
-              </ScrollView>
+                animation={animation}
+              />
             );
           })}
         </View>
@@ -163,6 +133,48 @@ export default function InteractiveElements() {
     </View>
   );
 }
+
+const Ball = ({
+  onChangeColor,
+  index,
+  currentIndex,
+  animation = new Animated.Value(0),
+}) => {
+  return (
+    <ScrollView
+      key={index}
+      scrollEnabled={false}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.ballContainer}>
+      <TouchableWithoutFeedback onPress={() => onChangeColor(index)}>
+        <View
+          style={[
+            styles.ball,
+            {
+              backgroundColor: getColor(index),
+            },
+          ]}
+        />
+      </TouchableWithoutFeedback>
+      <Animated.View
+        style={[
+          styles.indicator,
+          {
+            transform: [
+              {
+                translateX: animation.interpolate({
+                  inputRange: [index - 1, index, index + 1],
+                  outputRange: [-BALL_HEIGHT, 0, BALL_HEIGHT],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}
+      />
+    </ScrollView>
+  );
+};
 
 const Time = ({time, visible}) => {
   if (!visible) {
