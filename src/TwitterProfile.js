@@ -31,6 +31,8 @@ const user = {
   color: '#836953',
 };
 
+const ICON_SIZE = 32;
+const AVATAR_SIZE = 86;
 const MIN_HEADER_HEIGHT = 60;
 const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
 const colors = {
@@ -39,33 +41,41 @@ const colors = {
 };
 
 export default function TwitterProfile() {
-  const animation = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      //   onPanResponderGrant: () => animation.extractOffset(),
+      onPanResponderGrant: () => scrollY.extractOffset(),
       onPanResponderMove: Animated.event(
         [
+          null,
           {
-            nativeEvent: {
-              contentOffset: {
-                y: animation,
-              },
-            },
+            dy: scrollY,
           },
         ],
         {useNativeDriver: false},
       ),
+      onPanResponderRelease: (_, {dy}) => console.log('released', dy),
     }),
   ).current;
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
       <StatusBar backgroundColor={user.color} barStyle="light-content" />
-      <Animated.View style={[styles.header]}>
-        <Animated.View style={[styles.imageHeader, {}]}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            height: scrollY.interpolate({
+              inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+              outputRange: [MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT],
+              extrapolate: 'clamp',
+            }),
+          },
+        ]}>
+        {/* <Animated.View style={[styles.imageHeader, {}]}>
           <Image source={user.header} style={styles.image} />
-        </Animated.View>
+        </Animated.View> */}
         <View style={styles.appBar}>
           <IconButton name="arrow-left" />
           <Animated.View style={[styles.headerContent]}>
@@ -77,7 +87,7 @@ export default function TwitterProfile() {
       </Animated.View>
 
       <View style={styles.body}>
-        <Avatar />
+        <Avatar animation={scrollY} />
         <View style={styles.bodyHeader}>
           <View style={styles.row}>
             <View style={styles.left} />
@@ -130,10 +140,7 @@ const Tabs = ({activeTab = 0}) => {
         </View>
         <View style={styles.tabIndicator} />
       </View>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.tabScrollView}
-      />
+      <View style={styles.scrollView} />
     </View>
   );
 };
@@ -169,11 +176,35 @@ const Button = ({text}) => (
   </TouchableOpacity>
 );
 
-const Avatar = () => {
+const Avatar = ({animation}) => {
+  const size = animation.interpolate({
+    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+    outputRange: [AVATAR_SIZE, 50],
+    extrapolate: 'clamp',
+  });
+  const top = animation.interpolate({
+    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+    outputRange: [-AVATAR_SIZE / 3, 2],
+    extrapolate: 'clamp',
+  });
+  const left = animation.interpolate({
+    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+    outputRange: [8, 24],
+    extrapolate: 'clamp',
+  });
   return (
-    <View style={[styles.avatar]}>
+    <Animated.View
+      style={[
+        styles.avatar,
+        {
+          height: size,
+          width: size,
+          top,
+          left,
+        },
+      ]}>
       <Image source={user.avatar} style={styles.avatarImage} />
-    </View>
+    </Animated.View>
   );
 };
 
@@ -183,15 +214,13 @@ const IconButton = ({name}) => (
   </View>
 );
 
-const ICON_SIZE = 32;
-const AVATAR_SIZE = 86;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
   },
   header: {
-    height: MAX_HEADER_HEIGHT,
+    // height: MAX_HEADER_HEIGHT,
     backgroundColor: user.color,
     justifyContent: 'flex-start',
   },
@@ -236,11 +265,7 @@ const styles = StyleSheet.create({
   },
   body: {},
   avatar: {
-    top: -AVATAR_SIZE / 3,
-    left: 8,
     position: 'absolute',
-    height: AVATAR_SIZE,
-    width: AVATAR_SIZE,
     borderRadius: AVATAR_SIZE / 2,
     borderColor: 'white',
     borderWidth: 4,
