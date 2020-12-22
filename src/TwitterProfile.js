@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,8 @@ import {
   TouchableNativeFeedback,
   ScrollView,
   Dimensions,
+  PanResponder,
+  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -37,22 +39,39 @@ const colors = {
 };
 
 export default function TwitterProfile() {
+  const animation = useRef(new Animated.Value(0)).current;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => animation.extractOffset(),
+      onPanResponderMove: Animated.event(
+        [
+          null,
+          {
+            dy: animation,
+          },
+        ],
+        {useNativeDriver: false},
+      ),
+    }),
+  ).current;
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <StatusBar backgroundColor={user.color} barStyle="light-content" />
-      <View style={styles.header}>
-        <View style={styles.imageHeader}>
+      <Animated.View style={[styles.header]}>
+        <Animated.View style={[styles.imageHeader]}>
           <Image source={user.header} style={styles.image} />
-        </View>
+        </Animated.View>
         <View style={styles.appBar}>
           <IconButton name="arrow-left" />
-          <View style={styles.headerContent}>
+          <Animated.View style={[styles.headerContent]}>
             <Text style={styles.title}>{user.fullname}</Text>
             <Text style={styles.subtitle}>{user.tweetsCount} Tweets</Text>
-          </View>
+          </Animated.View>
           <IconButton name="more-vertical" />
         </View>
-      </View>
+      </Animated.View>
 
       <View style={styles.body}>
         <Avatar />
