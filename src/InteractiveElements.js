@@ -34,12 +34,14 @@ export default function InteractiveElements() {
   const [name, setName] = useState("Trader Joe's");
   const [date, setDate] = useState(moment());
   const [colorIndex, setColorIndex] = useState(0);
+  const [fullDay, setFullDay] = useState(false);
 
   const onChangeName = (value) => setName(value);
   const onChangeColor = (newIndex) => setColorIndex(newIndex);
   const setToday = () => setDate(moment());
   const setTomorrow = () => setDate(moment().add(1, 'day'));
   const nextDay = () => setDate(moment(date).add(1, 'day'));
+  const toggleFullday = () => setFullDay((prev) => !prev);
 
   return (
     <View style={styles.container}>
@@ -110,7 +112,7 @@ export default function InteractiveElements() {
             />
             <Button text="+1" onPress={nextDay} colorIndex={colorIndex} />
           </View>
-          <Switch text="Full Day" />
+          <Switch text="Full Day" value={fullDay} onPress={toggleFullday} />
         </View>
       </View>
     </View>
@@ -126,28 +128,35 @@ const Button = ({text, onPress, colorIndex}) => (
   </TouchableHighlight>
 );
 
-const Switch = ({text, colorIndex}) => {
+const Switch = ({text, colorIndex, value, onPress}) => {
+  const toggleStyle = {
+    left: !value ? 0 : null,
+    right: value ? 0 : null,
+  };
   return (
-    <View style={styles.switchContainer}>
-      <Text style={styles.label}>{text}</Text>
-      <View
-        style={[
-          styles.switchButton,
-          {
-            backgroundColor: getColor(colorIndex),
-          },
-        ]}>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <View style={styles.switchContainer}>
+        <Text style={styles.label}>{text}</Text>
         <View
           style={[
-            styles.toggle,
+            styles.switchButton,
             {
-              borderColor: getColor(colorIndex),
+              backgroundColor: getColor(colorIndex),
             },
           ]}>
-          <View style={[styles.toggleShadow]} />
+          <View
+            style={[
+              styles.toggle,
+              {
+                borderColor: getColor(colorIndex),
+              },
+              toggleStyle,
+            ]}>
+            <View style={[styles.toggleShadow]} />
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
