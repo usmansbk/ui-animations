@@ -43,7 +43,7 @@ export default function InteractiveElements() {
 
   const animation = useRef(new Animated.Value(0)).current;
   const textAnimation = useRef(new Animated.Value(1)).current;
-  const switchAnimation = useRef(new Animated.Value(fullDay ? 1 : 0)).current;
+  const switchAnimation = useRef(new Animated.Value(fullDay ? 0 : 1)).current;
 
   const onChangeName = (value) => {
     setName(value);
@@ -79,7 +79,7 @@ export default function InteractiveElements() {
     const prevValue = fullDay;
     setFullDay((prev) => !prev);
     Animated.timing(switchAnimation, {
-      toValue: prevValue ? 0 : 1,
+      toValue: prevValue ? 1 : 0,
       duration: 200,
       useNativeDriver: true,
     }).start();
@@ -300,7 +300,7 @@ const Switch = ({
                   {
                     translateX: animation.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, BALL_HEIGHT - BALL_HEIGHT * 0.2],
+                      outputRange: [BALL_HEIGHT - BALL_HEIGHT * 0.2, 0],
                     }),
                   },
                 ],
