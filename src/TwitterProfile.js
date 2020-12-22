@@ -7,8 +7,12 @@ import {
   StatusBar,
   TouchableOpacity,
   TouchableNativeFeedback,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+
+const {height} = Dimensions.get('window');
 
 const user = {
   fullname: 'Usman Suleiman',
@@ -74,34 +78,40 @@ export default function TwitterProfile() {
         </View>
       </View>
 
-      <TabBar />
+      <Tabs />
     </View>
   );
 }
 
 const tabs = ['Tweets', 'Tweets & replies', 'Media', 'Likes'];
 
-const TabBar = ({activeTab = 0}) => {
+const Tabs = ({activeTab = 0}) => {
   return (
     <View>
-      <View style={styles.tabs}>
-        {tabs.map((tab, index) => {
-          return (
-            <TouchableNativeFeedback key={index}>
-              <View style={styles.tab}>
-                <Text
-                  style={[
-                    styles.tabLabel,
-                    activeTab === index ? styles.activeTabLabel : undefined,
-                  ]}>
-                  {tab}
-                </Text>
-              </View>
-            </TouchableNativeFeedback>
-          );
-        })}
+      <View>
+        <View style={styles.tabs}>
+          {tabs.map((tab, index) => {
+            return (
+              <TouchableNativeFeedback key={index}>
+                <View style={styles.tab}>
+                  <Text
+                    style={[
+                      styles.tabLabel,
+                      activeTab === index ? styles.activeTabLabel : undefined,
+                    ]}>
+                    {tab}
+                  </Text>
+                </View>
+              </TouchableNativeFeedback>
+            );
+          })}
+        </View>
+        <View style={styles.tabIndicator} />
       </View>
-      <View style={styles.tabIndicator} />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.tabScrollView}
+      />
     </View>
   );
 };
@@ -298,5 +308,12 @@ const styles = StyleSheet.create({
     height: 3,
     width: 86,
     backgroundColor: colors.blue,
+  },
+  tabScrollView: {
+    flexGrow: 1,
+  },
+  scrollView: {
+    flexGrow: 1,
+    height,
   },
 });
