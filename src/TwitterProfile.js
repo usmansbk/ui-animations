@@ -25,7 +25,7 @@ const user = {
 };
 
 const MIN_HEADER_HEIGHT = 60;
-const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2;
+const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
 
 export default function TwitterProfile() {
   return (
@@ -46,10 +46,15 @@ export default function TwitterProfile() {
       </View>
 
       <View style={styles.body}>
-        <View style={styles.row}>
-          <Avatar />
-          <View style={styles.left} />
-          <Button text="Edit profile" />
+        <Avatar />
+        <View style={styles.bodyHeader}>
+          <View style={styles.row}>
+            <View style={styles.left} />
+            <Button text="Edit profile" />
+          </View>
+          <Text style={styles.name}>{user.fullname}</Text>
+          <Text style={styles.caption}>{user.handle}</Text>
+          <Text style={styles.text}>{user.bio}</Text>
         </View>
       </View>
     </View>
@@ -97,7 +102,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   icon: {
-    backgroundColor: 'rgba(0, 0, 0, .3)',
+    backgroundColor: 'rgba(0, 0, 0, .4)',
     width: ICON_SIZE,
     height: ICON_SIZE,
     justifyContent: 'center',
@@ -159,10 +164,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#73808a',
     borderRadius: 20,
-    margin: 12,
   },
   buttonText: {
     fontWeight: 'bold',
     color: '#73808a',
+  },
+  bodyHeader: {
+    margin: 12,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 12,
+    marginBottom: 2,
+  },
+  caption: {
+    color: '#73808a',
+    fontSize: 15,
+  },
+  text: {
+    marginVertical: 10,
+    lineHeight: 20,
   },
 });
