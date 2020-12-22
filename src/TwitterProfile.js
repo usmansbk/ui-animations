@@ -26,6 +26,9 @@ const user = {
 
 const MIN_HEADER_HEIGHT = 60;
 const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
+const colors = {
+  gray: '#73808a',
+};
 
 export default function TwitterProfile() {
   return (
@@ -55,11 +58,29 @@ export default function TwitterProfile() {
           <Text style={styles.name}>{user.fullname}</Text>
           <Text style={styles.caption}>{user.handle}</Text>
           <Text style={styles.text}>{user.bio}</Text>
+
+          <View style={styles.wrappedRow}>
+            <Caption icon="map-pin" text={user.location} />
+            <Caption icon="link" text={user.link} link />
+            <Caption icon="calendar" text={`Joined ${user.joined}`} />
+          </View>
         </View>
       </View>
     </View>
   );
 }
+
+const Caption = ({text, icon, link}) => (
+  <View style={styles.textRow}>
+    <Icon
+      name={icon}
+      size={14}
+      color={colors.gray}
+      style={styles.captionIcon}
+    />
+    <Text style={[styles.caption, link ? styles.link : undefined]}>{text}</Text>
+  </View>
+);
 
 const Button = ({text}) => (
   <TouchableNativeFeedback>
@@ -158,16 +179,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  wrappedRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   button: {
     padding: 6,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: '#73808a',
+    borderColor: colors.gray,
     borderRadius: 20,
   },
   buttonText: {
     fontWeight: 'bold',
-    color: '#73808a',
+    color: colors.gray,
   },
   bodyHeader: {
     margin: 12,
@@ -179,11 +204,23 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   caption: {
-    color: '#73808a',
+    color: colors.gray,
     fontSize: 15,
+  },
+  captionIcon: {
+    marginRight: 8,
   },
   text: {
     marginVertical: 10,
     lineHeight: 20,
+  },
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 16,
+    marginVertical: 4,
+  },
+  link: {
+    color: '#1a8dc2',
   },
 });
