@@ -179,7 +179,27 @@ export default function TwitterProfile() {
         </View>
       </Animated.View>
 
-      <Tabs />
+      <Animated.View
+        style={[
+          styles.bottom,
+          {
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [
+                    0,
+                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+                    BODY_HEIGHT,
+                  ],
+                  outputRange: [0, 0, -BODY_HEIGHT],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Tabs />
+      </Animated.View>
     </View>
   );
 }
