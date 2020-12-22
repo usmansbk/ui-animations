@@ -10,7 +10,6 @@ import {
   View,
   Animated,
   ScrollView,
-  Easing,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -40,10 +39,11 @@ export default function InteractiveElements() {
   const [name, setName] = useState("Trader Joe's");
   const [date, setDate] = useState(moment());
   const [colorIndex, setColorIndex] = useState(0);
-  const [fullDay, setFullDay] = useState(false);
+  const [fullDay, setFullDay] = useState(true);
 
   const animation = useRef(new Animated.Value(0)).current;
   const textAnimation = useRef(new Animated.Value(1)).current;
+  const switchAnimation = useRef(new Animated.Value(fullDay ? 1 : 0)).current;
 
   const onChangeName = (value) => {
     setName(value);
@@ -75,7 +75,15 @@ export default function InteractiveElements() {
   const nextDay = () => {
     animateDate(() => setDate(moment(date).add(1, 'day')));
   };
-  const toggleFullday = () => setFullDay((prev) => !prev);
+  const toggleFullday = () => {
+    const prevValue = fullDay;
+    setFullDay((prev) => !prev);
+    Animated.timing(switchAnimation, {
+      toValue: prevValue ? 0 : 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
     <View style={styles.container}>
@@ -133,7 +141,10 @@ export default function InteractiveElements() {
                     ]}>
                     {date.format('MMMM DD, YYYY')}
                   </Animated.Text>
-                  <Time time={date.format('HH:MM A')} visible={fullDay} />
+                  <Time
+                    time={date.format('HH:MM A')}
+                    animation={switchAnimation}
+                  />
                 </View>
                 <Icon name="chevron-down" size={20} color="gray" />
               </View>
@@ -200,19 +211,26 @@ const Ball = ({onChangeColor, index, animation = new Animated.Value(0)}) => {
   );
 };
 
-const Time = ({time, visible}) => {
-  if (!visible) {
-    return null;
-  }
+const Time = ({time, animation = new Animated.Value(0)}) => {
   return (
-    <View style={styles.timeContainer}>
+    <Animated.View
+      style={[
+        styles.timeContainer,
+        {
+          opacity: animation,
+        },
+      ]}>
       <AnimatedIcon
         style={[
           styles.arrow,
           {
             transform: [
               {
-                rotateZ: '90deg',
+                rotateZ: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '90deg'],
+                  extrapolate: 'clamp',
+                }),
               },
             ],
           },
@@ -221,8 +239,24 @@ const Time = ({time, visible}) => {
         name="arrow-up"
         size={20}
       />
-      <Text style={styles.pickerText}>{time}</Text>
-    </View>
+      <Animated.Text
+        style={[
+          styles.pickerText,
+          {
+            transform: [
+              {
+                translateX: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-8, 0],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}>
+        {time}
+      </Animated.Text>
+    </Animated.View>
   );
 };
 
