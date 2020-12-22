@@ -48,15 +48,17 @@ export default function TwitterProfile() {
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => scrollY.extractOffset(),
-      onPanResponderMove: Animated.event(
-        [
-          null,
-          {
-            dy: scrollY,
-          },
-        ],
-        {useNativeDriver: false},
-      ),
+      onPanResponderMove: (_, gestureState) =>
+        scrollY.setValue(-gestureState.dy), // natural scrolling
+      //   onPanResponderMove: Animated.event(
+      //     [
+      //       null,
+      //       {
+      //         dy: scrollY,
+      //       },
+      //     ],
+      //     {useNativeDriver: false},
+      //   ),
       onPanResponderRelease: (_, {dy}) => console.log('released', dy),
     }),
   ).current;
