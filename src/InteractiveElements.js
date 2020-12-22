@@ -24,7 +24,7 @@ const colors = [
   '46, 204, 112',
   '39, 174, 96',
   '52, 152, 219',
-  '155, 89, 182',
+  '214, 48, 49',
   '142, 68, 173',
   '232, 67, 147',
   '230, 126, 34',
@@ -41,10 +41,17 @@ export default function InteractiveElements() {
   const [colorIndex, setColorIndex] = useState(0);
   const [fullDay, setFullDay] = useState(false);
 
-  const animation = useRef(new Animated.Value(0));
+  const animation = useRef(new Animated.Value(0)).current;
 
   const onChangeName = (value) => setName(value);
-  const onChangeColor = (newIndex) => setColorIndex(newIndex);
+  const onChangeColor = (newIndex) => {
+    setColorIndex(newIndex);
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
   const setToday = () => setDate(moment());
   const setTomorrow = () => setDate(moment().add(1, 'day'));
   const nextDay = () => setDate(moment(date).add(1, 'day'));
@@ -66,12 +73,11 @@ export default function InteractiveElements() {
           {colors.map((_, index) => {
             return (
               <ScrollView
+                key={index}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.ballContainer}>
-                <TouchableWithoutFeedback
-                  key={index}
-                  onPress={() => onChangeColor(index)}>
+                <TouchableWithoutFeedback onPress={() => onChangeColor(index)}>
                   <View
                     style={[
                       styles.ball,
@@ -81,13 +87,22 @@ export default function InteractiveElements() {
                     ]}
                   />
                 </TouchableWithoutFeedback>
-                <View
+                <Animated.View
                   style={[
                     styles.indicator,
                     {
                       transform: [
                         {
-                          translateX: index === colorIndex ? 0 : -BALL_HEIGHT,
+                          // translateX: index === colorIndex ? 0 : -BALL_HEIGHT,
+                          translateX: animation.interpolate({
+                            inputRange: [0, 1],
+
+                            outputRange: [
+                              (index - 1) * BALL_HEIGHT,
+                              index * BALL_HEIGHT,
+                            ],
+                            extrapolate: 'clamp',
+                          }),
                         },
                       ],
                     },
