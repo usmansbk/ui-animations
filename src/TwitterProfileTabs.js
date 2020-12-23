@@ -40,6 +40,12 @@ export default function TwitterProfileTabs() {
       <View style={styles.tabBar}>
         <View style={styles.tabs}>
           {tabs.map((tab, index) => {
+            console.log(
+              (index - 1) * width,
+              index * width - width / 2,
+              (index + 1) * width,
+              (index + 1) * width + width / 2,
+            );
             return (
               <TouchableNativeFeedback
                 key={index}
@@ -57,12 +63,20 @@ export default function TwitterProfileTabs() {
                           color: scrollX.interpolate({
                             inputRange: [
                               (index - 1) * width,
+                              index * width - width / 2,
+                              index * width - width / 2 + 0.99,
                               index * width,
+                              index * width + width / 2 - 0.99,
+                              index * width + width / 2,
                               (index + 1) * width,
                             ],
                             outputRange: [
                               inactiveTabColor,
+                              inactiveTabColor,
                               activeTabColor,
+                              activeTabColor,
+                              activeTabColor,
+                              inactiveTabColor,
                               inactiveTabColor,
                             ],
                             extrapolate: 'clamp',
