@@ -12,6 +12,7 @@ import {
   Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import Tabs from './TwitterProfileTabs';
 
 const {height} = Dimensions.get('window');
 
@@ -181,58 +182,30 @@ export default function TwitterProfile() {
         </View>
       </Animated.View>
 
-      <Tabs animation={scrollY} />
+      <Animated.View
+        style={[
+          styles.bottom,
+          {
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [
+                    0,
+                    MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
+                    BODY_HEIGHT,
+                  ],
+                  outputRange: [0, 0, -BODY_HEIGHT],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Tabs />
+      </Animated.View>
     </View>
   );
 }
-
-const tabs = ['Tweets', 'Tweets & replies', 'Media', 'Likes'];
-
-const Tabs = ({activeTab = 0, animation}) => {
-  return (
-    <Animated.View
-      style={[
-        styles.bottom,
-        {
-          transform: [
-            {
-              translateY: animation.interpolate({
-                inputRange: [
-                  0,
-                  MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT,
-                  BODY_HEIGHT,
-                ],
-                outputRange: [0, 0, -BODY_HEIGHT],
-                extrapolate: 'clamp',
-              }),
-            },
-          ],
-        },
-      ]}>
-      <View>
-        <View style={styles.tabs}>
-          {tabs.map((tab, index) => {
-            return (
-              <TouchableNativeFeedback key={index}>
-                <View style={styles.tab}>
-                  <Text
-                    style={[
-                      styles.tabLabel,
-                      activeTab === index ? styles.activeTabLabel : undefined,
-                    ]}>
-                    {tab}
-                  </Text>
-                </View>
-              </TouchableNativeFeedback>
-            );
-          })}
-        </View>
-        <View style={styles.tabIndicator} />
-      </View>
-      <View style={styles.scrollView} />
-    </Animated.View>
-  );
-};
 
 const StatButton = ({count, text}) => (
   <TouchableOpacity>
@@ -425,34 +398,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 4,
   },
-  tabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  tabLabel: {
-    fontWeight: 'bold',
-    color: colors.gray,
-    fontSize: 16,
-  },
-  tab: {
-    padding: 12,
-  },
-  activeTabLabel: {
-    color: colors.blue,
-  },
-  tabIndicator: {
-    height: 3,
-    width: 86,
-    backgroundColor: colors.blue,
-  },
-  tabScrollView: {
-    flexGrow: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
-    height,
-  },
   bottom: {
     flex: 1,
+    height,
+    backgroundColor: 'red',
   },
 });

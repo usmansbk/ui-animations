@@ -40,12 +40,6 @@ export default function TwitterProfileTabs() {
       <View style={styles.tabBar}>
         <View style={styles.tabs}>
           {tabs.map((tab, index) => {
-            console.log(
-              (index - 1) * width,
-              index * width - width / 2,
-              (index + 1) * width,
-              (index + 1) * width + width / 2,
-            );
             return (
               <TouchableNativeFeedback
                 key={index}
@@ -122,6 +116,7 @@ export default function TwitterProfileTabs() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        style={styles.scrollView}
         onScroll={Animated.event(
           [{nativeEvent: {contentOffset: {x: scrollX}}}],
           {useNativeDriver: false},
