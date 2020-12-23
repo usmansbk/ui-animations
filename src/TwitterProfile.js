@@ -50,7 +50,6 @@ export default function TwitterProfile() {
       onPanResponderGrant: () => scrollY.extractOffset(),
       onPanResponderMove: (_, gestureState) =>
         scrollY.setValue(-gestureState.dy), // natural scrolling
-      onPanResponderRelease: (_, {dy}) => console.log('released', dy),
     }),
   ).current;
 
