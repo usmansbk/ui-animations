@@ -114,6 +114,7 @@ export default function TwitterProfileTabs() {
       <ScrollView
         ref={scrollRef}
         horizontal
+        scrollEventThrottle={16}
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         style={styles.scrollView}

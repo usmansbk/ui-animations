@@ -399,7 +399,6 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   bottom: {
-    flex: 1,
     height,
     backgroundColor: 'red',
   },
