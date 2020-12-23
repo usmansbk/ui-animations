@@ -1,15 +1,15 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import {
   Animated,
   Dimensions,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableNativeFeedback,
   View,
 } from 'react-native';
 
 const activeTabColor = '#3498db';
+const inactiveTabColor = '#777777';
 const tabs = [
   {
     name: 'Tweets',
@@ -33,7 +33,7 @@ const {width} = Dimensions.get('window');
 
 export default function TwitterProfileTabs() {
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [activeIndex] = useState(0);
+  const scrollRef = useRef(null);
 
   return (
     <View style={styles.container}>
@@ -41,18 +41,62 @@ export default function TwitterProfileTabs() {
         <View style={styles.tabs}>
           {tabs.map((tab, index) => {
             return (
-              <TouchableNativeFeedback>
+              <TouchableNativeFeedback
+                key={index}
+                onPress={() =>
+                  scrollRef.current.scrollTo({
+                    x: width * index,
+                  })
+                }>
                 <View>
                   <View style={styles.tab}>
-                    <Text
+                    <Animated.Text
                       style={[
                         styles.label,
-                        activeIndex === index ? styles.activeStyle : undefined,
+                        {
+                          color: scrollX.interpolate({
+                            inputRange: [
+                              (index - 1) * width,
+                              index * width,
+                              (index + 1) * width,
+                            ],
+                            outputRange: [
+                              inactiveTabColor,
+                              activeTabColor,
+                              inactiveTabColor,
+                            ],
+                            extrapolate: 'clamp',
+                          }),
+                        },
                       ]}>
                       {tab.name}
-                    </Text>
+                    </Animated.Text>
                   </View>
-                  <Animated.View style={[styles.indicator]} />
+                  <Animated.View
+                    style={[
+                      styles.indicator,
+                      {
+                        width: scrollX.interpolate({
+                          inputRange: [
+                            (index - 1) * width,
+                            index * width,
+                            (index + 1) * width,
+                          ],
+                          outputRange: ['0%', '100%', '0%'],
+                          extrapolate: 'clamp',
+                        }),
+                        left: scrollX.interpolate({
+                          inputRange: [
+                            (index - 1) * width,
+                            index * width,
+                            (index + 1) * width,
+                          ],
+                          outputRange: ['0%', '0%', '100%'],
+                          extrapolate: 'clamp',
+                        }),
+                      },
+                    ]}
+                  />
                 </View>
               </TouchableNativeFeedback>
             );
@@ -60,6 +104,7 @@ export default function TwitterProfileTabs() {
         </View>
       </View>
       <ScrollView
+        ref={scrollRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
@@ -94,6 +139,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     width,
   },
+  tabBar: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#6491b1',
+  },
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -107,7 +156,7 @@ const styles = StyleSheet.create({
     color: '#777',
   },
   indicator: {
-    height: 4,
+    height: 3,
     backgroundColor: activeTabColor,
   },
   activeStyle: {
