@@ -272,7 +272,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    // height: MAX_HEADER_HEIGHT,
     backgroundColor: user.color,
     justifyContent: 'flex-start',
   },
