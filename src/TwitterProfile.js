@@ -6,7 +6,6 @@ import {
   Image,
   StatusBar,
   TouchableOpacity,
-  TouchableNativeFeedback,
   Dimensions,
   PanResponder,
   Animated,
