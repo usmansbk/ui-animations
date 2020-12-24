@@ -59,8 +59,7 @@ export default function Gmail() {
 }
 
 const SearchBar = ({animation}) => {
-  const HEIGHT = SEARCH_BAR_HEIGHT;
-  const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
+  const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
   return (
     <Animated.View
       style={[
@@ -69,8 +68,8 @@ const SearchBar = ({animation}) => {
           transform: [
             {
               translateY: scrollY.interpolate({
-                inputRange: [0, HEIGHT],
-                outputRange: [0, -HEIGHT],
+                inputRange: [0, SEARCH_BAR_HEIGHT],
+                outputRange: [0, -SEARCH_BAR_HEIGHT],
                 extrapolate: 'clamp',
               }),
             },
