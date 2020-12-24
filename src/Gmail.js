@@ -9,15 +9,16 @@ import {
   Image,
   Animated,
   StatusBar,
-  TouchableNativeFeedback,
 } from 'react-native';
 import moment from 'moment';
+import {RectButton} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import data from '../assets/email';
 
 export default function Gmail() {
   const listRef = useRef(null);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const fabAnimation = useRef(new Animated.Value(0)).current;
 
   return (
     <View style={styles.container}>
@@ -26,14 +27,13 @@ export default function Gmail() {
       <View style={styles.container}>
         <Animated.FlatList
           ref={listRef}
-          bounces={false}
-          ListHeaderComponent={Header}
+          data={data}
           keyExtractor={({id}) => String(id)}
           style={styles.list}
-          data={data}
+          ListHeaderComponent={Header}
           renderItem={({item}) => <Item {...item} />}
           contentContainerStyle={styles.contentContainer}
-          scrollEventThrottle={2}
+          scrollEventThrottle={1}
           onScroll={Animated.event(
             [
               {
@@ -44,10 +44,10 @@ export default function Gmail() {
                 },
               },
             ],
-            {useNativeDriver: false},
+            {useNativeDriver: true},
           )}
         />
-        <FAB animation={scrollY} />
+        <FAB animation={fabAnimation} />
       </View>
       <View style={styles.footer}>
         <IconButton
@@ -66,35 +66,36 @@ const FAB = ({animation}) => {
   const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
 
   return (
-    <Animated.View
-      style={[
-        styles.fab,
-        {
-          width: scrollY.interpolate({
-            inputRange: [0, SEARCH_BAR_HEIGHT],
-            outputRange: [LARGE_FAB, SMALL_FAB],
-            extrapolate: 'clamp',
-          }),
-        },
-      ]}>
-      <View style={styles.fabIcon}>
-        <Icon name="pencil-outline" size={24} color={colors.red} />
-      </View>
-      <Animated.Text
+    <RectButton style={styles.fab}>
+      <Animated.View
         style={[
-          styles.label,
-          styles.fabLabel,
           {
-            opacity: scrollY.interpolate({
-              inputRange: [0, 0.5, SEARCH_BAR_HEIGHT],
-              outputRange: [1, 0, 0],
+            width: scrollY.interpolate({
+              inputRange: [0, SEARCH_BAR_HEIGHT],
+              outputRange: [LARGE_FAB, SMALL_FAB],
               extrapolate: 'clamp',
             }),
           },
         ]}>
-        Compose
-      </Animated.Text>
-    </Animated.View>
+        <View style={styles.fabIcon}>
+          <Icon name="pencil-outline" size={24} color={colors.red} />
+        </View>
+        <Animated.Text
+          style={[
+            styles.label,
+            styles.fabLabel,
+            {
+              opacity: scrollY.interpolate({
+                inputRange: [0, 0.5, SEARCH_BAR_HEIGHT],
+                outputRange: [1, 0, 0],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}>
+          Compose
+        </Animated.Text>
+      </Animated.View>
+    </RectButton>
   );
 };
 
@@ -117,11 +118,9 @@ const SearchBar = ({animation, goBack = () => null}) => {
           ],
         },
       ]}>
-      <TouchableNativeFeedback onPress={goBack}>
-        <View style={styles.button}>
-          <Icon name="menu" size={24} />
-        </View>
-      </TouchableNativeFeedback>
+      <RectButton onPress={goBack} style={styles.button}>
+        <Icon name="menu" size={24} />
+      </RectButton>
       <TextInput
         placeholderTextColor={colors.text}
         placeholder="Search in emails"
@@ -207,7 +206,7 @@ const IconButton = ({name, label, focused, size = 24, onPress}) => {
 };
 
 const colors = {
-  red: '#c5221f',
+  red: '#ea4335',
   gray: '#e7e7e7',
   text: '#5d5d5d',
   gray2: '#a2a2a2',
@@ -227,8 +226,8 @@ const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 const AVATAR_SIZE = 40;
 const SEARCH_BAR_HEIGHT = 60;
 const BUTTON_SIZE = 48;
-const SMALL_FAB = 52;
-const LARGE_FAB = 52 * 3;
+const SMALL_FAB = 50;
+const LARGE_FAB = 50 * 3;
 
 const styles = StyleSheet.create({
   container: {
@@ -344,7 +343,9 @@ const styles = StyleSheet.create({
   button: {
     height: BUTTON_SIZE,
     width: BUTTON_SIZE,
+    borderRadius: BUTTON_SIZE / 2,
     justifyContent: 'center',
+    backgroundColor: 'white',
     alignItems: 'center',
   },
   fab: {
