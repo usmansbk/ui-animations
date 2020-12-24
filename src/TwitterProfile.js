@@ -43,13 +43,14 @@ const colors = {
 };
 
 export default function TwitterProfile() {
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const animation = useRef(new Animated.Value(0)).current;
+  const scrollY = Animated.diffClamp(animation, -BODY_HEIGHT, BODY_HEIGHT);
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => scrollY.extractOffset(),
+      onPanResponderGrant: () => animation.extractOffset(),
       onPanResponderMove: (_, gestureState) =>
-        scrollY.setValue(-gestureState.dy), // natural scrolling
+        animation.setValue(-gestureState.dy), // natural scrolling
     }),
   ).current;
 
