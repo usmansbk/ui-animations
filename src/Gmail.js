@@ -23,28 +23,31 @@ export default function Gmail() {
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <SearchBar animation={scrollY} />
-      <Animated.FlatList
-        ref={listRef}
-        ListHeaderComponent={Header}
-        keyExtractor={({id}) => String(id)}
-        style={styles.list}
-        data={data}
-        renderItem={({item}) => <Item {...item} />}
-        contentContainerStyle={styles.contentContainer}
-        scrollEventThrottle={1}
-        onScroll={Animated.event(
-          [
-            {
-              nativeEvent: {
-                contentOffset: {
-                  y: scrollY,
+      <View style={styles.container}>
+        <Animated.FlatList
+          ref={listRef}
+          ListHeaderComponent={Header}
+          keyExtractor={({id}) => String(id)}
+          style={styles.list}
+          data={data}
+          renderItem={({item}) => <Item {...item} />}
+          contentContainerStyle={styles.contentContainer}
+          scrollEventThrottle={1}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    y: scrollY,
+                  },
                 },
               },
-            },
-          ],
-          {useNativeDriver: true},
-        )}
-      />
+            ],
+            {useNativeDriver: true},
+          )}
+        />
+        <FAB />
+      </View>
       <View style={styles.footer}>
         <IconButton
           name="email"
@@ -57,6 +60,20 @@ export default function Gmail() {
     </View>
   );
 }
+
+const FAB = () => {
+  return (
+    <View style={styles.fab}>
+      <Icon
+        name="pencil-outline"
+        size={24}
+        color={colors.red}
+        style={styles.fabIcon}
+      />
+      <Text style={styles.label}>Compose</Text>
+    </View>
+  );
+};
 
 const SearchBar = ({animation, goBack = () => null}) => {
   const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
@@ -200,6 +217,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.red,
+    fontWeight: '600',
   },
   footer: {
     borderTopWidth: StyleSheet.hairlineWidth,
@@ -302,5 +320,20 @@ const styles = StyleSheet.create({
     width: 48,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    right: 22,
+    bottom: 12,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    elevation: 4,
+    alignItems: 'center',
+    height: 48,
+    borderRadius: 24,
+  },
+  fabIcon: {
+    marginRight: 16,
   },
 });
