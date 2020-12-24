@@ -26,13 +26,14 @@ export default function Gmail() {
       <View style={styles.container}>
         <Animated.FlatList
           ref={listRef}
+          bounces={false}
           ListHeaderComponent={Header}
           keyExtractor={({id}) => String(id)}
           style={styles.list}
           data={data}
           renderItem={({item}) => <Item {...item} />}
           contentContainerStyle={styles.contentContainer}
-          scrollEventThrottle={1}
+          scrollEventThrottle={2}
           onScroll={Animated.event(
             [
               {
@@ -43,10 +44,10 @@ export default function Gmail() {
                 },
               },
             ],
-            {useNativeDriver: true},
+            {useNativeDriver: false},
           )}
         />
-        <FAB />
+        <FAB animation={scrollY} />
       </View>
       <View style={styles.footer}>
         <IconButton
@@ -61,17 +62,39 @@ export default function Gmail() {
   );
 }
 
-const FAB = () => {
+const FAB = ({animation}) => {
+  const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
+
   return (
-    <View style={styles.fab}>
-      <Icon
-        name="pencil-outline"
-        size={24}
-        color={colors.red}
-        style={styles.fabIcon}
-      />
-      <Text style={styles.label}>Compose</Text>
-    </View>
+    <Animated.View
+      style={[
+        styles.fab,
+        {
+          width: scrollY.interpolate({
+            inputRange: [0, SEARCH_BAR_HEIGHT],
+            outputRange: [LARGE_FAB, SMALL_FAB],
+            extrapolate: 'clamp',
+          }),
+        },
+      ]}>
+      <View style={styles.fabIcon}>
+        <Icon name="pencil-outline" size={24} color={colors.red} />
+      </View>
+      <Animated.Text
+        style={[
+          styles.label,
+          styles.fabLabel,
+          {
+            opacity: scrollY.interpolate({
+              inputRange: [0, 0.5, SEARCH_BAR_HEIGHT],
+              outputRange: [1, 0, 0],
+              extrapolate: 'clamp',
+            }),
+          },
+        ]}>
+        Compose
+      </Animated.Text>
+    </Animated.View>
   );
 };
 
@@ -203,6 +226,9 @@ const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 
 const AVATAR_SIZE = 40;
 const SEARCH_BAR_HEIGHT = 60;
+const BUTTON_SIZE = 48;
+const SMALL_FAB = 52;
+const LARGE_FAB = 52 * 3;
 
 const styles = StyleSheet.create({
   container: {
@@ -294,7 +320,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     position: 'absolute',
-    height: 48,
+    height: BUTTON_SIZE,
     width: '92%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -316,8 +342,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    height: 48,
-    width: 48,
+    height: BUTTON_SIZE,
+    width: BUTTON_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -325,15 +351,24 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 22,
     bottom: 12,
-    paddingHorizontal: 24,
     flexDirection: 'row',
     backgroundColor: 'white',
     elevation: 4,
     alignItems: 'center',
-    height: 48,
-    borderRadius: 24,
+    justifyContent: 'space-between',
+    height: SMALL_FAB,
+    width: LARGE_FAB,
+    borderRadius: SMALL_FAB / 2,
   },
   fabIcon: {
-    marginRight: 16,
+    width: SMALL_FAB,
+    height: SMALL_FAB,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: SMALL_FAB / 2,
+    padding: 8,
+  },
+  fabLabel: {
+    flex: 1,
   },
 });
