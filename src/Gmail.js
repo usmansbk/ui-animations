@@ -1,19 +1,23 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   FlatList,
   StyleSheet,
   View,
   Text,
   TouchableHighlight,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import data from '../assets/email';
 
 export default function Gmail() {
+  const listRef = useRef(null);
+
   return (
     <View style={styles.container}>
       <FlatList
+        ref={listRef}
         ListHeaderComponent={Header}
         keyExtractor={({id}) => String(id)}
         style={styles.list}
@@ -22,7 +26,12 @@ export default function Gmail() {
         contentContainerStyle={styles.contentContainer}
       />
       <View style={styles.footer}>
-        <IconButton name="email" label="Mail" focused />
+        <IconButton
+          name="email"
+          label="Mail"
+          focused
+          onPress={() => listRef.current.scrollToOffset({offset: 0})}
+        />
         <IconButton name="video-outline" label="Meet" size={30} />
       </View>
     </View>
@@ -86,16 +95,18 @@ const Avatar = ({name}) => {
   );
 };
 
-const IconButton = ({name, label, focused, size = 24}) => {
+const IconButton = ({name, label, focused, size = 24, onPress}) => {
   const color = focused ? colors.red : colors.text;
   const focusedStyle = {
     color,
   };
   return (
-    <View style={styles.iconButton}>
-      <Icon name={name} color={color} size={size} />
-      <Text style={[styles.label, focusedStyle]}>{label}</Text>
-    </View>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <View style={styles.iconButton}>
+        <Icon name={name} color={color} size={size} />
+        <Text style={[styles.label, focusedStyle]}>{label}</Text>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
