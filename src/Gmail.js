@@ -24,35 +24,38 @@ export default function Gmail() {
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <SearchBar animation={scrollY} />
-      <Animated.FlatList
-        data={data}
-        keyExtractor={({id}) => String(id)}
-        ref={listRef}
-        style={styles.list}
-        contentContainerStyle={styles.contentContainer}
-        renderItem={({item}) => <Item {...item} />}
-        refreshControl={
-          <RefreshControl
-            colors={['green']}
-            refreshing={false}
-            progressViewOffset={SEARCH_BAR_HEIGHT}
-          />
-        }
-        onScroll={Animated.event(
-          [
-            {
-              nativeEvent: {
-                contentOffset: {
-                  y: scrollY,
+      <View style={styles.container}>
+        <Animated.FlatList
+          data={data}
+          keyExtractor={({id}) => String(id)}
+          ref={listRef}
+          style={styles.list}
+          contentContainerStyle={styles.contentContainer}
+          renderItem={({item}) => <Item {...item} />}
+          refreshControl={
+            <RefreshControl
+              colors={['green']}
+              refreshing={false}
+              progressViewOffset={SEARCH_BAR_HEIGHT}
+            />
+          }
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    y: scrollY,
+                  },
                 },
               },
-            },
-          ],
-          {useNativeDriver: true},
-        )}
-        ListHeaderComponent={Header}
-      />
-      <FAB animation={scrollY} />
+            ],
+            {useNativeDriver: true},
+          )}
+          ListHeaderComponent={Header}
+          ListFooterComponent={Footer}
+        />
+        <FAB animation={scrollY} />
+      </View>
       <View style={styles.footer}>
         <IconButton
           name="email"
@@ -118,6 +121,8 @@ const Header = () => (
     <Text style={styles.headerText}>PRIMARY</Text>
   </View>
 );
+
+const Footer = () => <View style={styles.listFooter} />;
 
 const Item = ({name, date, title, message}) => {
   return (
@@ -296,6 +301,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: colors.text,
+  },
+  listFooter: {
+    height: 100,
   },
   searchBar: {
     position: 'absolute',
