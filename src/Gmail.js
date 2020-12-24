@@ -1,6 +1,5 @@
 import React, {useRef} from 'react';
 import {
-  FlatList,
   StyleSheet,
   View,
   Text,
@@ -10,6 +9,7 @@ import {
   Image,
   Animated,
   StatusBar,
+  TouchableNativeFeedback,
 } from 'react-native';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -58,10 +58,11 @@ export default function Gmail() {
   );
 }
 
-const SearchBar = ({animation}) => {
+const SearchBar = ({animation, goBack = () => null}) => {
   const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
   return (
     <Animated.View
+      pointerEvents="auto"
       style={[
         styles.searchBar,
         {
@@ -76,11 +77,11 @@ const SearchBar = ({animation}) => {
           ],
         },
       ]}>
-      <TouchableWithoutFeedback>
+      <TouchableNativeFeedback onPress={goBack}>
         <View style={styles.button}>
           <Icon name="menu" size={24} />
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableNativeFeedback>
       <TextInput
         placeholderTextColor={colors.text}
         placeholder="Search in emails"
@@ -285,6 +286,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     paddingHorizontal: 4,
+    zIndex: 1000,
   },
   thumbnail: {
     width: 32,
