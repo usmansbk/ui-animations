@@ -19,6 +19,7 @@ export default function Gmail() {
         style={styles.list}
         data={data}
         renderItem={({item}) => <Item {...item} />}
+        contentContainerStyle={styles.contentContainer}
       />
       <View style={styles.footer}>
         <IconButton name="email" label="Mail" focused />
@@ -117,6 +118,7 @@ const avatarColors = [
 const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 
 const AVATAR_SIZE = 40;
+const SEARCH_BAR_HEIGHT = 60;
 
 const styles = StyleSheet.create({
   container: {
@@ -125,6 +127,9 @@ const styles = StyleSheet.create({
   },
   list: {
     flexGrow: 1,
+  },
+  contentContainer: {
+    paddingTop: SEARCH_BAR_HEIGHT,
   },
   label: {
     color: colors.red,
