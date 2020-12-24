@@ -14,6 +14,7 @@ export default function Gmail() {
   return (
     <View style={styles.container}>
       <FlatList
+        ListHeaderComponent={Header}
         keyExtractor={({id}) => String(id)}
         style={styles.list}
         data={data}
@@ -26,6 +27,12 @@ export default function Gmail() {
     </View>
   );
 }
+
+const Header = () => (
+  <View style={styles.header}>
+    <Text style={styles.headerText}>PRIMARY</Text>
+  </View>
+);
 
 const Item = ({name, date, title, message}) => {
   return (
@@ -187,5 +194,12 @@ const styles = StyleSheet.create({
   initials: {
     color: 'white',
     fontSize: AVATAR_SIZE / 2,
+  },
+  header: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+  },
+  headerText: {
+    color: colors.text,
   },
 });
