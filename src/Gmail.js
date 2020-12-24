@@ -24,44 +24,41 @@ export default function Gmail() {
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <SearchBar animation={scrollY} />
-      <View style={styles.list}>
-        <Animated.ScrollView
-          ref={listRef}
-          style={styles.contentContainer}
-          refreshControl={
-            <RefreshControl
-              colors={['green']}
-              refreshing={false}
-              progressViewOffset={SEARCH_BAR_HEIGHT}
-            />
-          }
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: {
-                    y: scrollY,
-                  },
+      <Animated.FlatList
+        data={data}
+        keyExtractor={({id}) => String(id)}
+        ref={listRef}
+        style={styles.list}
+        contentContainerStyle={styles.contentContainer}
+        renderItem={({item}) => <Item {...item} />}
+        refreshControl={
+          <RefreshControl
+            colors={['green']}
+            refreshing={false}
+            progressViewOffset={SEARCH_BAR_HEIGHT}
+          />
+        }
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
                 },
               },
-            ],
-            {useNativeDriver: true},
-          )}>
-          <Header />
-          <Animated.View>
-            {data.map((item) => {
-              return <Item {...item} key={item.id} />;
-            })}
-          </Animated.View>
-        </Animated.ScrollView>
-        <FAB animation={scrollY} />
-      </View>
+            },
+          ],
+          {useNativeDriver: true},
+        )}
+        ListHeaderComponent={Header}
+      />
+      <FAB animation={scrollY} />
       <View style={styles.footer}>
         <IconButton
           name="email"
           label="Mail"
           focused
-          onPress={() => listRef.current.scrollTo({y: 0})}
+          onPress={() => listRef.current.scrollToOffset({y: 0})}
         />
         <IconButton name="video-outline" label="Meet" size={30} />
       </View>
@@ -218,7 +215,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   list: {
-    flex: 1,
+    flexGrow: 1,
   },
   contentContainer: {
     paddingTop: SEARCH_BAR_HEIGHT,
