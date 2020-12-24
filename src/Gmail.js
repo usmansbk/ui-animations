@@ -8,6 +8,8 @@ import {
   TouchableWithoutFeedback,
   TextInput,
   Image,
+  Animated,
+  StatusBar,
 } from 'react-native';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,11 +17,13 @@ import data from '../assets/email';
 
 export default function Gmail() {
   const listRef = useRef(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   return (
     <View style={styles.container}>
-      <SearchBar />
-      <FlatList
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
+      <SearchBar animation={scrollY} />
+      <Animated.FlatList
         ref={listRef}
         ListHeaderComponent={Header}
         keyExtractor={({id}) => String(id)}
@@ -27,6 +31,19 @@ export default function Gmail() {
         data={data}
         renderItem={({item}) => <Item {...item} />}
         contentContainerStyle={styles.contentContainer}
+        scrollEventThrottle={1}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+          {useNativeDriver: true},
+        )}
       />
       <View style={styles.footer}>
         <IconButton
@@ -41,9 +58,25 @@ export default function Gmail() {
   );
 }
 
-const SearchBar = () => {
+const SearchBar = ({animation}) => {
+  const HEIGHT = SEARCH_BAR_HEIGHT;
+  const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
   return (
-    <View style={styles.searchBar}>
+    <Animated.View
+      style={[
+        styles.searchBar,
+        {
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [0, HEIGHT],
+                outputRange: [0, -HEIGHT],
+                extrapolate: 'clamp',
+              }),
+            },
+          ],
+        },
+      ]}>
       <TouchableWithoutFeedback>
         <View style={styles.button}>
           <Icon name="menu" size={24} />
@@ -57,7 +90,7 @@ const SearchBar = () => {
       <View style={styles.button}>
         <Image source={require('../assets/me.jpeg')} style={styles.thumbnail} />
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -247,7 +280,7 @@ const styles = StyleSheet.create({
     width: '92%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
+    marginTop: 12,
     elevation: 4,
     alignSelf: 'center',
     backgroundColor: 'white',
