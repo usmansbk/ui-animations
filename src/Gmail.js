@@ -6,6 +6,8 @@ import {
   Text,
   TouchableHighlight,
   TouchableWithoutFeedback,
+  TextInput,
+  Image,
 } from 'react-native';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,6 +18,7 @@ export default function Gmail() {
 
   return (
     <View style={styles.container}>
+      <SearchBar />
       <FlatList
         ref={listRef}
         ListHeaderComponent={Header}
@@ -37,6 +40,26 @@ export default function Gmail() {
     </View>
   );
 }
+
+const SearchBar = () => {
+  return (
+    <View style={styles.searchBar}>
+      <TouchableWithoutFeedback>
+        <View style={styles.button}>
+          <Icon name="menu" size={24} />
+        </View>
+      </TouchableWithoutFeedback>
+      <TextInput
+        placeholderTextColor={colors.text}
+        placeholder="Search in emails"
+        style={styles.textInput}
+      />
+      <View style={styles.button}>
+        <Image source={require('../assets/me.jpeg')} style={styles.thumbnail} />
+      </View>
+    </View>
+  );
+};
 
 const Header = () => (
   <View style={styles.header}>
@@ -217,5 +240,33 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: colors.text,
+  },
+  searchBar: {
+    position: 'absolute',
+    height: 48,
+    width: '92%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 16,
+    elevation: 4,
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingHorizontal: 4,
+  },
+  thumbnail: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+  },
+  button: {
+    height: 48,
+    width: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
