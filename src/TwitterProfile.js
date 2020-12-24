@@ -36,7 +36,7 @@ const AVATAR_SIZE = 86;
 const MIN_AVATAR_SIZE = 50;
 const MIN_HEADER_HEIGHT = 60;
 const MAX_HEADER_HEIGHT = MIN_HEADER_HEIGHT * 2 + 10;
-const BODY_HEIGHT = height * 0.36;
+const BODY_HEIGHT = height * 0.361;
 const colors = {
   gray: '#73808a',
   blue: '#00acee',
