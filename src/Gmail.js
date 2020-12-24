@@ -18,22 +18,15 @@ import data from '../assets/email';
 export default function Gmail() {
   const listRef = useRef(null);
   const scrollY = useRef(new Animated.Value(0)).current;
-  const fabAnimation = useRef(new Animated.Value(0)).current;
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <SearchBar animation={scrollY} />
-      <View style={styles.container}>
-        <Animated.FlatList
+      <View style={styles.list}>
+        <Animated.ScrollView
           ref={listRef}
-          data={data}
-          keyExtractor={({id}) => String(id)}
-          style={styles.list}
-          ListHeaderComponent={Header}
-          renderItem={({item}) => <Item {...item} />}
-          contentContainerStyle={styles.contentContainer}
-          scrollEventThrottle={1}
+          style={styles.contentContainer}
           onScroll={Animated.event(
             [
               {
@@ -45,16 +38,22 @@ export default function Gmail() {
               },
             ],
             {useNativeDriver: true},
-          )}
-        />
-        <FAB animation={fabAnimation} />
+          )}>
+          <Header />
+          <Animated.View>
+            {data.map((item) => {
+              return <Item {...item} key={item.id} />;
+            })}
+          </Animated.View>
+        </Animated.ScrollView>
+        <FAB animation={scrollY} />
       </View>
       <View style={styles.footer}>
         <IconButton
           name="email"
           label="Mail"
           focused
-          onPress={() => listRef.current.scrollToOffset({offset: 0})}
+          onPress={() => listRef.current.scrollTo({y: 0})}
         />
         <IconButton name="video-outline" label="Meet" size={30} />
       </View>
@@ -63,38 +62,14 @@ export default function Gmail() {
 }
 
 const FAB = ({animation}) => {
-  const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
-
   return (
     <RectButton style={styles.fab}>
-      <Animated.View
-        style={[
-          {
-            width: scrollY.interpolate({
-              inputRange: [0, SEARCH_BAR_HEIGHT],
-              outputRange: [LARGE_FAB, SMALL_FAB],
-              extrapolate: 'clamp',
-            }),
-          },
-        ]}>
-        <View style={styles.fabIcon}>
-          <Icon name="pencil-outline" size={24} color={colors.red} />
-        </View>
-        <Animated.Text
-          style={[
-            styles.label,
-            styles.fabLabel,
-            {
-              opacity: scrollY.interpolate({
-                inputRange: [0, 0.5, SEARCH_BAR_HEIGHT],
-                outputRange: [1, 0, 0],
-                extrapolate: 'clamp',
-              }),
-            },
-          ]}>
-          Compose
-        </Animated.Text>
-      </Animated.View>
+      <View style={styles.fabIcon}>
+        <Icon name="pencil-outline" size={24} color={colors.red} />
+      </View>
+      <Animated.Text style={[styles.label, styles.fabLabel]}>
+        Compose
+      </Animated.Text>
     </RectButton>
   );
 };
@@ -235,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   list: {
-    flexGrow: 1,
+    flex: 1,
   },
   contentContainer: {
     paddingTop: SEARCH_BAR_HEIGHT,
