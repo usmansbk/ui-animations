@@ -9,6 +9,7 @@ import {
   Image,
   Animated,
   StatusBar,
+  RefreshControl,
 } from 'react-native';
 import moment from 'moment';
 import {RectButton} from 'react-native-gesture-handler';
@@ -27,6 +28,13 @@ export default function Gmail() {
         <Animated.ScrollView
           ref={listRef}
           style={styles.contentContainer}
+          refreshControl={
+            <RefreshControl
+              colors={['green']}
+              refreshing={false}
+              progressViewOffset={SEARCH_BAR_HEIGHT}
+            />
+          }
           onScroll={Animated.event(
             [
               {
