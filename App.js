@@ -1,6 +1,6 @@
 import React from 'react';
-import TwitterProfile from './src/TwitterProfile';
+import Gmail from './src/Gmail';
 
 export default function App() {
-  return <TwitterProfile />;
+  return <Gmail />;
 }
