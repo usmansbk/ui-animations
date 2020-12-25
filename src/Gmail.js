@@ -89,7 +89,6 @@ export default function Gmail() {
         />
         <IconButton name="video-outline" label="Meet" size={30} />
       </View>
-      <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
       <Animated.View
         style={[
           styles.searchContainer,
@@ -102,6 +101,7 @@ export default function Gmail() {
           },
         ]}
       />
+      <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
     </View>
   );
 }
@@ -275,6 +275,7 @@ const SearchBar = ({animation, searchAnimation}) => {
           </Animated.View>
         </Animated.View>
       </TouchableNativeFeedback>
+
       <Animated.View
         pointerEvents={focused ? 'auto' : 'none'}
         style={[
@@ -552,7 +553,11 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     position: 'absolute',
     width: '100%',
-    zIndex: 10,
+  },
+  searchContainer: {
+    backgroundColor: 'white',
+    position: 'absolute',
+    width: '100%',
   },
   thumbnail: {
     width: 32,
@@ -604,12 +609,5 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  searchContainer: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: '100%',
   },
 });
