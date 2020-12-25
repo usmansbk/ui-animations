@@ -18,6 +18,9 @@ import data from '../assets/email';
 
 const MIN_VELOCITY = 0.7;
 
+/**
+ * Gmail android app search, search header, and FAB animation
+ */
 export default function Gmail() {
   const listRef = useRef(null);
   const scrollY = useRef(new Animated.Value(0)).current;
