@@ -152,6 +152,7 @@ const FAB = ({animation = new Animated.Value(0)}) => {
 };
 
 const SearchBar = ({animation, searchAnimation}) => {
+  const textInput = useRef(null);
   const HEIGHT = SEARCH_BAR_HEIGHT + 16;
   const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
 
@@ -160,14 +161,18 @@ const SearchBar = ({animation, searchAnimation}) => {
       toValue: 0,
       duration: 200,
       useNativeDriver: false,
-    }).start();
+    }).start(() => {
+      textInput.current.blur();
+    });
   };
   const openSearch = () => {
     Animated.timing(searchAnimation, {
       toValue: 1,
       duration: 200,
       useNativeDriver: false,
-    }).start();
+    }).start(() => {
+      textInput.current.focus();
+    });
   };
 
   return (
@@ -238,6 +243,7 @@ const SearchBar = ({animation, searchAnimation}) => {
             </Animated.View>
           </TouchableNativeFeedback>
           <TextInput
+            ref={textInput}
             style={styles.textInput}
             placeholder="Search in emails"
             placeholderTextColor={colors.text}
