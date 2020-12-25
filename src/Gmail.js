@@ -10,9 +10,9 @@ import {
   Animated,
   StatusBar,
   RefreshControl,
+  TouchableNativeFeedback,
 } from 'react-native';
 import moment from 'moment';
-import {RectButton} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import data from '../assets/email';
 
@@ -22,12 +22,13 @@ export default function Gmail() {
   const listRef = useRef(null);
   const scrollY = useRef(new Animated.Value(0)).current;
   const fabAnimation = useRef(new Animated.Value(0)).current;
+  const searchAnimation = useRef(new Animated.Value(0)).current;
   const isAnimating = useRef(false);
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <SearchBar animation={scrollY} />
+      <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
       <View style={styles.container}>
         <Animated.FlatList
           data={data}
@@ -150,9 +151,25 @@ const FAB = ({animation = new Animated.Value(0)}) => {
   );
 };
 
-const SearchBar = ({animation, goBack = () => console.log('back')}) => {
+const SearchBar = ({animation, searchAnimation}) => {
   const HEIGHT = SEARCH_BAR_HEIGHT + 16;
   const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
+
+  const closeSearch = () => {
+    Animated.timing(searchAnimation, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+  const openSearch = () => {
+    Animated.timing(searchAnimation, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  };
+
   return (
     <Animated.View
       style={[
@@ -169,34 +186,84 @@ const SearchBar = ({animation, goBack = () => console.log('back')}) => {
           ],
         },
       ]}>
-      <View style={[styles.searchBarOverlay]}>
+      <Animated.View
+        style={[
+          styles.searchBarOverlay,
+          {
+            marginHorizontal: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [16, 0],
+              extrapolate: 'clamp',
+            }),
+            marginTop: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [12, 0],
+              extrapolate: 'clamp',
+            }),
+            height: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['80%', '100%'],
+              extrapolate: 'clamp',
+            }),
+            elevation: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 100],
+              extrapolate: 'clamp',
+            }),
+            zIndex: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 100],
+              extrapolate: 'clamp',
+            }),
+          },
+        ]}>
         <View style={styles.inputRow}>
-          <View style={styles.button}>
-            <Icon name="arrow-left" size={24} />
-          </View>
+          <TouchableNativeFeedback onPress={closeSearch}>
+            <Animated.View
+              style={[
+                styles.button,
+                {
+                  transform: [
+                    {
+                      rotateZ: searchAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['180deg', '360deg'],
+                        extrapolate: 'clamp',
+                      }),
+                    },
+                  ],
+                },
+              ]}>
+              <Icon name="arrow-left" size={24} />
+            </Animated.View>
+          </TouchableNativeFeedback>
           <TextInput
             style={styles.textInput}
             placeholder="Search in emails"
             placeholderTextColor={colors.text}
+            returnKeyType="search"
+            onSubmitEditing={closeSearch}
           />
           <View style={styles.button}>
             <Icon name="microphone" size={24} />
           </View>
         </View>
-      </View>
+      </Animated.View>
 
-      <RectButton style={styles.searchBar}>
-        <View style={styles.button}>
-          <Icon name="menu" size={24} />
+      <TouchableNativeFeedback onPress={openSearch}>
+        <View style={styles.searchBar}>
+          <View style={styles.button}>
+            <Icon name="menu" size={24} />
+          </View>
+          <Text style={styles.placeholder}>Search in emails</Text>
+          <View style={styles.button}>
+            <Image
+              source={require('../assets/me.jpeg')}
+              style={styles.thumbnail}
+            />
+          </View>
         </View>
-        <Text style={styles.placeholder}>Search in emails</Text>
-        <View style={styles.button}>
-          <Image
-            source={require('../assets/me.jpeg')}
-            style={styles.thumbnail}
-          />
-        </View>
-      </RectButton>
+      </TouchableNativeFeedback>
     </Animated.View>
   );
 };
@@ -400,12 +467,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     paddingHorizontal: 4,
+    marginHorizontal: 16,
+    marginTop: 12,
   },
   searchBarOverlay: {
     ...StyleSheet.absoluteFill,
     height: SEARCH_BAR_HEIGHT,
-    width: '100%',
-    marginLeft: 16,
+    marginHorizontal: 16,
     marginTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
@@ -416,8 +484,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     zIndex: 10,
-    paddingHorizontal: 16,
-    paddingTop: 12,
   },
   thumbnail: {
     width: 32,
