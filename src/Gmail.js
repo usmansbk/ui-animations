@@ -16,9 +16,12 @@ import {RectButton} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import data from '../assets/email';
 
+const MIN_VELOCITY = 0.7;
+
 export default function Gmail() {
   const listRef = useRef(null);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const fabAnimation = useRef(new Animated.Value(0)).current;
 
   return (
     <View style={styles.container}>
@@ -39,22 +42,33 @@ export default function Gmail() {
               progressViewOffset={SEARCH_BAR_HEIGHT}
             />
           }
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: {
-                    y: scrollY,
-                  },
-                },
+          scrollEventThrottle={16}
+          onScroll={(e) => {
+            const {
+              nativeEvent: {
+                contentOffset: {y},
+                velocity: {y: velocityY},
               },
-            ],
-            {useNativeDriver: true},
-          )}
+            } = e;
+            scrollY.setValue(y);
+            if (y === 0) {
+              Animated.timing(fabAnimation, {
+                toValue: 0,
+                duration: 50,
+                useNativeDriver: false,
+              }).start();
+            } else if (Math.abs(velocityY) >= MIN_VELOCITY) {
+              Animated.timing(fabAnimation, {
+                toValue: velocityY < 0 ? 0 : LARGE_FAB_WIDTH,
+                duration: 50,
+                useNativeDriver: false,
+              }).start();
+            }
+          }}
           ListHeaderComponent={Header}
           ListFooterComponent={Footer}
         />
-        <FAB animation={scrollY} />
+        <FAB animation={fabAnimation} />
       </View>
       <View style={styles.footer}>
         <IconButton
@@ -69,16 +83,51 @@ export default function Gmail() {
   );
 }
 
-const FAB = ({animation}) => {
+const FAB = ({animation = new Animated.Value(0)}) => {
   return (
-    <RectButton style={styles.fab}>
+    <Animated.ScrollView
+      scrollEnabled={false}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.fab}
+      style={[
+        styles.fabContainer,
+        {
+          width: animation.interpolate({
+            inputRange: [0, LARGE_FAB_WIDTH],
+            outputRange: [LARGE_FAB_WIDTH, SMALL_FAB],
+            extrapolate: 'clamp',
+          }),
+          height: animation.interpolate({
+            inputRange: [0, LARGE_FAB_WIDTH],
+            outputRange: [LARGE_FAB_HEIGHT, SMALL_FAB],
+            extrapolate: 'clamp',
+          }),
+          borderRadius: animation.interpolate({
+            inputRange: [0, LARGE_FAB_WIDTH],
+            outputRange: [LARGE_FAB_HEIGHT / 2, SMALL_FAB / 2],
+            extrapolate: 'clamp',
+          }),
+        },
+      ]}>
       <View style={styles.fabIcon}>
         <Icon name="pencil-outline" size={24} color={colors.red} />
       </View>
-      <Animated.Text style={[styles.label, styles.fabLabel]}>
+      <Animated.Text
+        style={[
+          styles.label,
+          styles.fabLabel,
+          {
+            opacity: animation.interpolate({
+              inputRange: [0, SMALL_FAB / 2, LARGE_FAB_WIDTH],
+              outputRange: [1, 1, 0],
+              extrapolate: 'clamp',
+            }),
+          },
+        ]}>
         Compose
       </Animated.Text>
-    </RectButton>
+    </Animated.ScrollView>
   );
 };
 
@@ -211,8 +260,9 @@ const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 const AVATAR_SIZE = 40;
 const SEARCH_BAR_HEIGHT = 60;
 const BUTTON_SIZE = 48;
-const SMALL_FAB = 50;
-const LARGE_FAB = 50 * 3;
+const SMALL_FAB = 60;
+const LARGE_FAB_HEIGHT = 54;
+const LARGE_FAB_WIDTH = LARGE_FAB_HEIGHT * 3;
 
 const styles = StyleSheet.create({
   container: {
@@ -337,17 +387,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fab: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: SMALL_FAB,
+  },
+  fabContainer: {
+    backgroundColor: 'white',
+    elevation: 4,
     position: 'absolute',
     right: 22,
     bottom: 12,
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    elevation: 4,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: SMALL_FAB,
-    width: LARGE_FAB,
-    borderRadius: SMALL_FAB / 2,
   },
   fabIcon: {
     width: SMALL_FAB,
