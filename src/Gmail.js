@@ -45,12 +45,41 @@ export default function Gmail() {
   const fabAnimation = useRef(new Animated.Value(0)).current;
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const headerAnimation = useRef(new Animated.Value(0)).current;
+  const detailAnimation = useRef(new Animated.Value(0)).current;
+  const emailPosition = useRef(new Animated.ValueXY(0)).current;
+  const emailSize = useRef(new Animated.ValueXY(0)).current;
   const isAnimating = useRef(false);
+  const items = useRef({}).current;
   const [activeMail, setActiveMail] = useState(null);
 
-  const renderItem = useCallback(({item, index}) => {
-    return <Item {...item} onPress={() => setActiveMail(data[index])} />;
-  }, []);
+  const goBack = () => {
+    Animated.timing(detailAnimation, {
+      toValue: 0,
+      useNativeDriver: false,
+      duration: 300,
+    }).start();
+    setActiveMail(null);
+  };
+  const onPressItem = (index) => {
+    items[index].measure((x, y, a, b, pageX, pageY) => {
+      console.log('result', pageX, pageY),
+        Animated.timing(detailAnimation, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 200,
+        }).start();
+    });
+    setActiveMail(data[index]);
+  };
+  const renderItem = ({item, index}) => {
+    return (
+      <Item
+        ref={(ref) => (items[index] = ref)}
+        {...item}
+        onPress={() => onPressItem(index)}
+      />
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -131,21 +160,48 @@ export default function Gmail() {
         searchAnimation={searchAnimation}
       />
 
-      <View
+      <Animated.View
         style={[
           detailStyles.container,
           {
-            opacity: activeMail ? 1 : 0,
+            opacity: detailAnimation,
           },
         ]}
         pointerEvents={activeMail ? 'auto' : 'none'}>
-        <View style={detailStyles.header}>
-          <TouchableNativeFeedback onPress={() => setActiveMail(null)}>
-            <View style={styles.button}>
-              <Icon name="arrow-left" size={24} color={colors.gray3} />
-            </View>
-          </TouchableNativeFeedback>
-          <View style={detailStyles.actions}>
+        <Animated.View style={[detailStyles.header]}>
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  rotateZ: detailAnimation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['180deg', '360deg'],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+            }}>
+            <TouchableNativeFeedback onPress={goBack}>
+              <View style={styles.button}>
+                <Icon name="arrow-left" size={24} color={colors.gray3} />
+              </View>
+            </TouchableNativeFeedback>
+          </Animated.View>
+          <Animated.View
+            style={[
+              detailStyles.actions,
+              {
+                transform: [
+                  {
+                    translateX: detailAnimation.interpolate({
+                      inputRange: [0, 0.2, 1],
+                      outputRange: [0, 0, -4],
+                      extrapolate: 'clamp',
+                    }),
+                  },
+                ],
+              },
+            ]}>
             <View style={styles.button}>
               <Icon
                 name="archive-arrow-down-outline"
@@ -162,9 +218,23 @@ export default function Gmail() {
             <View style={styles.button}>
               <Icon name="dots-vertical" size={24} color={colors.gray3} />
             </View>
-          </View>
-        </View>
-        <Animated.ScrollView style={detailStyles.content}>
+          </Animated.View>
+        </Animated.View>
+        <Animated.ScrollView
+          style={[
+            detailStyles.content,
+            {
+              transform: [
+                {
+                  translateY: detailAnimation.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [0, 0, -10],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+            },
+          ]}>
           <Text style={detailStyles.title}>{activeMail?.title}</Text>
           <View style={detailStyles.recipient}>
             <Avatar name={activeMail?.name || ''} />
@@ -187,7 +257,7 @@ export default function Gmail() {
             <Text style={detailStyles.message}>{activeMail?.message}</Text>
           </View>
         </Animated.ScrollView>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -479,12 +549,17 @@ const Header = () => (
 const Footer = () => <View style={styles.listFooter} />;
 
 class Item extends React.Component {
+  measure = (callback) => {
+    this.ref.measure(callback);
+  };
   onPress = () => this.props.onPress();
   shouldComponentUpdate = () => false;
   render() {
     const {name, date, title, message} = this.props;
     return (
       <TouchableHighlight
+        ref={(ref) => (this.ref = ref)}
+        onLayout={() => null}
         underlayColor={colors.gray}
         onPress={this.onPress}
         style={styles.itemContainer}>
@@ -594,6 +669,7 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     paddingVertical: 16,
     marginVertical: 2,
+    paddingLeft: 16,
     marginLeft: 4,
     borderRadius: 16,
     borderBottomRightRadius: 5,
@@ -604,7 +680,7 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     flex: 1,
-    paddingLeft: 4,
+    paddingLeft: 16,
   },
   itemSubtitle: {
     flex: 1,
@@ -630,7 +706,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 12,
     marginVertical: 2,
   },
   initials: {
