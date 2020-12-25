@@ -181,6 +181,22 @@ const SearchBar = ({animation, goBack = () => console.log('back')}) => {
           />
         </View>
       </RectButton>
+
+      <View style={[styles.searchBarOverlay]}>
+        <View style={styles.inputRow}>
+          <View style={styles.button}>
+            <Icon name="arrow-left" size={24} />
+          </View>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Search in emails"
+            placeholderTextColor={colors.text}
+          />
+          <View style={styles.button}>
+            <Icon name="microphone" size={24} />
+          </View>
+        </View>
+      </View>
     </Animated.View>
   );
 };
@@ -385,10 +401,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 4,
   },
+  searchBarOverlay: {
+    ...StyleSheet.absoluteFill,
+    height: SEARCH_BAR_HEIGHT,
+    width: '100%',
+    marginLeft: 16,
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 4,
+    zIndex: 100000,
+  },
   searchBarContainer: {
     position: 'absolute',
     width: '100%',
-    zIndex: 1000,
+    zIndex: 10,
     paddingHorizontal: 16,
     paddingTop: 12,
   },
@@ -438,5 +466,9 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 16,
     paddingHorizontal: 4,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
