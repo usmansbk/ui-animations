@@ -222,16 +222,58 @@ const SearchBar = ({animation, searchAnimation}) => {
               }),
             },
           ]}>
-          <View style={styles.button}>
+          <Animated.View
+            style={[
+              styles.button,
+              {
+                transform: [
+                  {
+                    translateX: searchAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -8],
+                      extrapolate: 'clamp',
+                    }),
+                  },
+                  {
+                    translateY: searchAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -8],
+                      extrapolate: 'clamp',
+                    }),
+                  },
+                ],
+              },
+            ]}>
             <Icon name="menu" size={24} />
-          </View>
+          </Animated.View>
           <Text style={styles.placeholder}>Search in emails</Text>
-          <View style={styles.button}>
+          <Animated.View
+            style={[
+              styles.button,
+              {
+                transform: [
+                  {
+                    translateX: searchAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 8],
+                      extrapolate: 'clamp',
+                    }),
+                  },
+                  {
+                    translateY: searchAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -8],
+                      extrapolate: 'clamp',
+                    }),
+                  },
+                ],
+              },
+            ]}>
             <Image
               source={require('../assets/me.jpeg')}
               style={styles.thumbnail}
             />
-          </View>
+          </Animated.View>
         </Animated.View>
       </TouchableNativeFeedback>
       <Animated.View
