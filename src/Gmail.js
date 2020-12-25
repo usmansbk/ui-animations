@@ -150,7 +150,11 @@ const FAB = ({animation = new Animated.Value(0)}) => {
   );
 };
 
-const SearchBar = ({animation, goBack = () => null}) => {
+const SearchBar = ({
+  animation,
+  goBack = () => null,
+  onSearch = () => console.log('search'),
+}) => {
   const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
   return (
     <Animated.View
@@ -172,11 +176,13 @@ const SearchBar = ({animation, goBack = () => null}) => {
       <RectButton onPress={goBack} style={styles.button}>
         <Icon name="menu" size={24} />
       </RectButton>
-      <TextInput
+      <Text style={styles.placeholder}>Search in emails</Text>
+      {/* <TextInput
+        editable={false}
         placeholderTextColor={colors.text}
         placeholder="Search in emails"
         style={styles.textInput}
-      />
+      /> */}
       <View style={styles.button}>
         <Image source={require('../assets/me.jpeg')} style={styles.thumbnail} />
       </View>
@@ -429,5 +435,10 @@ const styles = StyleSheet.create({
   fabLabel: {
     flex: 1,
     fontWeight: '700',
+  },
+  placeholder: {
+    flex: 1,
+    color: colors.text,
+    fontSize: 16,
   },
 });
