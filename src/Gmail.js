@@ -18,6 +18,25 @@ import data from '../assets/email';
 
 const MIN_VELOCITY = 0.7;
 
+const colors = {
+  red: '#DB4437',
+  gray: '#e7e7e7',
+  text: '#5d5d5d',
+  gray2: '#a2a2a2',
+  gray3: '#484848',
+};
+
+const avatarColors = [
+  '#bdc3c7',
+  '#9b59b6',
+  '#f39c12',
+  '#1abc9c',
+  '#2ecc71',
+  '#3498db',
+];
+
+const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
+
 /**
  * Gmail android app search, search header, and FAB animation
  */
@@ -145,7 +164,29 @@ export default function Gmail() {
             </View>
           </View>
         </View>
-        <Animated.ScrollView style={detailStyles.content} />
+        <Animated.ScrollView style={detailStyles.content}>
+          <Text style={detailStyles.title}>{activeMail?.title}</Text>
+          <View style={detailStyles.recipient}>
+            <Avatar name={activeMail?.name || ''} />
+            <View>
+              <View style={detailStyles.row}>
+                <Text style={detailStyles.name}>{activeMail?.name}</Text>
+                <Text style={detailStyles.date}>
+                  {activeMail?.date
+                    ? moment(activeMail?.date, 'dd/mm/yyyy').fromNow()
+                    : ''}
+                </Text>
+              </View>
+              <View style={detailStyles.row}>
+                <Text>to me</Text>
+                <Icon name="chevron-down" size={16} style={styles.icon} />
+              </View>
+            </View>
+          </View>
+          <View style={detailStyles.messageContainer}>
+            <Text style={detailStyles.message}>{activeMail?.message}</Text>
+          </View>
+        </Animated.ScrollView>
       </View>
     </View>
   );
@@ -165,7 +206,35 @@ const detailStyles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: 'tomato',
+    padding: 16,
+  },
+  title: {
+    fontSize: 25,
+    marginBottom: 16,
+  },
+  name: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  recipient: {
+    flexDirection: 'row',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  date: {
+    marginLeft: 12,
+    color: colors.gray3,
+  },
+  icon: {
+    marginLeft: 16,
+  },
+  messageContainer: {
+    paddingVertical: 20,
+  },
+  message: {
+    fontSize: 16,
   },
 });
 
@@ -479,25 +548,6 @@ const IconButton = ({name, label, focused, size = 24, onPress}) => {
     </TouchableWithoutFeedback>
   );
 };
-
-const colors = {
-  red: '#DB4437',
-  gray: '#e7e7e7',
-  text: '#5d5d5d',
-  gray2: '#a2a2a2',
-  gray3: '#484848',
-};
-
-const avatarColors = [
-  '#bdc3c7',
-  '#9b59b6',
-  '#f39c12',
-  '#1abc9c',
-  '#2ecc71',
-  '#3498db',
-];
-
-const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 
 const AVATAR_SIZE = 40;
 const SEARCH_BAR_HEIGHT = 48;
