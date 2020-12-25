@@ -26,6 +26,7 @@ export default function Gmail() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const fabAnimation = useRef(new Animated.Value(0)).current;
   const searchAnimation = useRef(new Animated.Value(0)).current;
+  const headerAnimation = useRef(new Animated.Value(0)).current;
   const isAnimating = useRef(false);
 
   return (
@@ -55,6 +56,7 @@ export default function Gmail() {
               },
             } = e;
             scrollY.setValue(y < 0 ? 0 : y); // prevent bounce on Android
+            headerAnimation.setValue(y < 0 ? 0 : y);
             if (y === 0) {
               Animated.timing(fabAnimation, {
                 toValue: 0,
@@ -101,7 +103,10 @@ export default function Gmail() {
           },
         ]}
       />
-      <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
+      <SearchBar
+        animation={headerAnimation}
+        searchAnimation={searchAnimation}
+      />
     </View>
   );
 }
@@ -180,6 +185,7 @@ const SearchBar = ({animation, searchAnimation}) => {
     }).start(() => {
       setFocus(false);
       textInput.current.blur();
+      animation.setValue(0);
     });
   };
   const openSearch = () => {
@@ -190,6 +196,7 @@ const SearchBar = ({animation, searchAnimation}) => {
     }).start(() => {
       setFocus(true);
       textInput.current.focus();
+      animation.setValue(0);
     });
   };
 
