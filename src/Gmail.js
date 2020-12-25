@@ -54,7 +54,7 @@ export default function Gmail() {
                 velocity: {y: velocityY},
               },
             } = e;
-            scrollY.setValue(y);
+            scrollY.setValue(y < 0 ? 0 : y); // prevent bounce on Android
             if (y === 0) {
               Animated.timing(fabAnimation, {
                 toValue: 0,
@@ -198,11 +198,15 @@ const SearchBar = ({animation, searchAnimation}) => {
       style={[
         styles.searchBarContainer,
         {
-          top: scrollY.interpolate({
-            inputRange: [0, HEIGHT],
-            outputRange: [0, -HEIGHT],
-            extrapolate: 'clamp',
-          }),
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [0, HEIGHT],
+                outputRange: [0, -HEIGHT],
+                extrapolate: 'clamp',
+              }),
+            },
+          ],
         },
       ]}>
       <TouchableNativeFeedback onPress={openSearch}>
@@ -547,6 +551,8 @@ const styles = StyleSheet.create({
     borderColor: colors.gray,
   },
   searchBarContainer: {
+    left: 0,
+    top: 0,
     position: 'absolute',
     width: '100%',
   },
