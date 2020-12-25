@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   listFooter: {
-    height: 100,
+    height: 80,
   },
   searchBar: {
     position: 'absolute',
