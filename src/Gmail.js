@@ -150,7 +150,7 @@ const FAB = ({animation = new Animated.Value(0)}) => {
   );
 };
 
-const SearchBar = ({animation, goBack = () => null}) => {
+const SearchBar = ({animation, goBack = () => console.log('back')}) => {
   const HEIGHT = SEARCH_BAR_HEIGHT + 16;
   const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
   return (
@@ -169,10 +169,10 @@ const SearchBar = ({animation, goBack = () => null}) => {
           ],
         },
       ]}>
-      <View style={styles.searchBar}>
-        <RectButton onPress={goBack} style={styles.button}>
+      <RectButton style={styles.searchBar}>
+        <View style={styles.button}>
           <Icon name="menu" size={24} />
-        </RectButton>
+        </View>
         <Text style={styles.placeholder}>Search in emails</Text>
         <View style={styles.button}>
           <Image
@@ -180,7 +180,7 @@ const SearchBar = ({animation, goBack = () => null}) => {
             style={styles.thumbnail}
           />
         </View>
-      </View>
+      </RectButton>
     </Animated.View>
   );
 };
@@ -406,7 +406,6 @@ const styles = StyleSheet.create({
     width: BUTTON_SIZE,
     borderRadius: BUTTON_SIZE / 2,
     justifyContent: 'center',
-    backgroundColor: 'white',
     alignItems: 'center',
   },
   fab: {
