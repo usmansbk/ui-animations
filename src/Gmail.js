@@ -77,14 +77,14 @@ export default function Gmail() {
     const id = BackHandler.addEventListener('hardwareBackPress', () => {
       if (activeMail) {
         goBack();
-        return false;
-      } else {
         return true;
+      } else {
+        BackHandler.exitApp();
       }
     });
 
     return () => BackHandler.removeEventListener(id);
-  }, [activeMail, goBack, searchAnimation]);
+  }, [activeMail, goBack]);
 
   const onPressItem = (index) => {
     items[index].measure((_x, _y, _a, _b, pageX, pageY) => {
