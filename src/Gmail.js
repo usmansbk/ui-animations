@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -42,6 +42,7 @@ const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
  */
 export default function Gmail() {
   const listRef = useRef(null);
+  const contentRef = useRef(null);
   const fabAnimation = useRef(new Animated.Value(0)).current;
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const headerAnimation = useRef(new Animated.Value(0)).current;
@@ -51,25 +52,53 @@ export default function Gmail() {
   const isAnimating = useRef(false);
   const items = useRef({}).current;
   const [activeMail, setActiveMail] = useState(null);
+  const previousLocation = useRef({}).current;
 
   const goBack = () => {
-    Animated.timing(detailAnimation, {
-      toValue: 0,
-      useNativeDriver: false,
-      duration: 300,
-    }).start();
-    setActiveMail(null);
+    Animated.parallel([
+      Animated.timing(detailAnimation, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 200,
+      }),
+      Animated.timing(emailPosition, {
+        toValue: {
+          x: previousLocation.x,
+          y: previousLocation.y,
+        },
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start(() => setActiveMail(null));
   };
   const onPressItem = (index) => {
-    items[index].measure((x, y, a, b, pageX, pageY) => {
-      console.log('result', pageX, pageY),
-        Animated.timing(detailAnimation, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 200,
-        }).start();
+    items[index].measure((_x, _y, _a, _b, pageX, pageY) => {
+      emailPosition.setValue({
+        x: pageX,
+        y: pageY,
+      });
+      contentRef.current.measure((__x, __y, width, height, dPageX, dPageY) => {
+        previousLocation.x = dPageX;
+        previousLocation.y = dPageY;
+        emailSize.setValue({
+          x: width,
+          y: height,
+        });
+        setActiveMail(data[index]);
+        Animated.parallel([
+          Animated.timing(emailPosition, {
+            toValue: {x: 0, y: 0},
+            useNativeDriver: false,
+            duration: 200,
+          }),
+          Animated.timing(detailAnimation, {
+            toValue: 1,
+            useNativeDriver: false,
+            duration: 200,
+          }),
+        ]).start();
+      });
     });
-    setActiveMail(data[index]);
   };
   const renderItem = ({item, index}) => {
     return (
@@ -160,6 +189,20 @@ export default function Gmail() {
         searchAnimation={searchAnimation}
       />
 
+      {activeMail ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.shadow,
+            {
+              top: emailPosition.y,
+              left: emailPosition.x,
+              opacity: detailAnimation,
+            },
+          ]}>
+          <Item {...activeMail} />
+        </Animated.View>
+      ) : null}
       <Animated.View
         style={[
           detailStyles.container,
@@ -200,6 +243,11 @@ export default function Gmail() {
                     }),
                   },
                 ],
+                opacity: detailAnimation.interpolate({
+                  inputRange: [0, 0.6, 1],
+                  outputRange: [0, 0, 1],
+                  extrapolate: 'clamp',
+                }),
               },
             ]}>
             <View style={styles.button}>
@@ -221,24 +269,20 @@ export default function Gmail() {
           </Animated.View>
         </Animated.View>
         <Animated.ScrollView
+          ref={contentRef}
+          onLayout={() => null}
           style={[
             detailStyles.content,
             {
-              transform: [
-                {
-                  translateY: detailAnimation.interpolate({
-                    inputRange: [0, 0.5, 1],
-                    outputRange: [0, 0, -10],
-                    extrapolate: 'clamp',
-                  }),
-                },
-              ],
+              top: emailPosition.y,
+              left: emailPosition.x,
+              height: emailSize.y,
             },
           ]}>
           <Text style={detailStyles.title}>{activeMail?.title}</Text>
           <View style={detailStyles.recipient}>
             <Avatar name={activeMail?.name || ''} />
-            <View>
+            <View style={detailStyles.nameRow}>
               <View style={detailStyles.row}>
                 <Text style={detailStyles.name}>{activeMail?.name}</Text>
                 <Text style={detailStyles.date}>
@@ -275,7 +319,6 @@ const detailStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   content: {
-    flex: 1,
     padding: 16,
   },
   title: {
@@ -305,6 +348,13 @@ const detailStyles = StyleSheet.create({
   },
   message: {
     fontSize: 16,
+  },
+  nameRow: {
+    marginLeft: 8,
+  },
+  shadow: {
+    width: '100%',
+    position: 'absolute',
   },
 });
 
@@ -674,6 +724,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderBottomRightRadius: 5,
     borderTopRightRadius: 5,
+    backgroundColor: 'white',
   },
   itemRow: {
     flexDirection: 'row',
