@@ -55,7 +55,7 @@ export default function Gmail() {
             if (y === 0) {
               Animated.timing(fabAnimation, {
                 toValue: 0,
-                duration: 50,
+                duration: 200,
                 useNativeDriver: false,
               }).start();
             } else if (
@@ -65,7 +65,7 @@ export default function Gmail() {
               isAnimating.current = true;
               Animated.timing(fabAnimation, {
                 toValue: velocityY < 0 ? 0 : LARGE_FAB_WIDTH,
-                duration: 50,
+                duration: 200,
                 useNativeDriver: false,
               }).start(() => {
                 isAnimating.current = false;
