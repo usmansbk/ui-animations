@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
   StatusBar,
   RefreshControl,
   TouchableNativeFeedback,
+  BackHandler,
 } from 'react-native';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -54,7 +55,7 @@ export default function Gmail() {
   const [activeMail, setActiveMail] = useState(null);
   const previousLocation = useRef({}).current;
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     Animated.parallel([
       Animated.timing(detailAnimation, {
         toValue: 0,
@@ -70,7 +71,21 @@ export default function Gmail() {
         useNativeDriver: false,
       }),
     ]).start(() => setActiveMail(null));
-  };
+  }, [detailAnimation, emailPosition, previousLocation.x, previousLocation.y]);
+
+  useEffect(() => {
+    const id = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (activeMail) {
+        goBack();
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    return () => BackHandler.removeEventListener(id);
+  }, [activeMail, goBack, searchAnimation]);
+
   const onPressItem = (index) => {
     items[index].measure((_x, _y, _a, _b, pageX, pageY) => {
       emailPosition.setValue({
