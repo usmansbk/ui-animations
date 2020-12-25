@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -29,6 +29,22 @@ export default function Gmail() {
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
+      <Animated.View
+        style={[
+          styles.searchContainer,
+          {
+            height: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+              extrapolate: 'clamp',
+            }),
+            width: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['80%', '100%'],
+            }),
+          },
+        ]}
+      />
       <View style={styles.container}>
         <Animated.FlatList
           data={data}
@@ -153,6 +169,7 @@ const FAB = ({animation = new Animated.Value(0)}) => {
 
 const SearchBar = ({animation, searchAnimation}) => {
   const textInput = useRef(null);
+  const [focused, setFocus] = useState(false);
   const HEIGHT = SEARCH_BAR_HEIGHT + 16;
   const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
 
@@ -162,6 +179,7 @@ const SearchBar = ({animation, searchAnimation}) => {
       duration: 200,
       useNativeDriver: false,
     }).start(() => {
+      setFocus(false);
       textInput.current.blur();
     });
   };
@@ -171,6 +189,7 @@ const SearchBar = ({animation, searchAnimation}) => {
       duration: 200,
       useNativeDriver: false,
     }).start(() => {
+      setFocus(true);
       textInput.current.focus();
     });
   };
@@ -191,7 +210,32 @@ const SearchBar = ({animation, searchAnimation}) => {
           ],
         },
       ]}>
+      <TouchableNativeFeedback onPress={openSearch}>
+        <Animated.View
+          style={[
+            styles.searchBar,
+            {
+              opacity: searchAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}>
+          <View style={styles.button}>
+            <Icon name="menu" size={24} />
+          </View>
+          <Text style={styles.placeholder}>Search in emails</Text>
+          <View style={styles.button}>
+            <Image
+              source={require('../assets/me.jpeg')}
+              style={styles.thumbnail}
+            />
+          </View>
+        </Animated.View>
+      </TouchableNativeFeedback>
       <Animated.View
+        pointerEvents={focused ? 'auto' : 'none'}
         style={[
           styles.searchBarOverlay,
           {
@@ -210,16 +254,7 @@ const SearchBar = ({animation, searchAnimation}) => {
               outputRange: ['80%', '100%'],
               extrapolate: 'clamp',
             }),
-            elevation: searchAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 100],
-              extrapolate: 'clamp',
-            }),
-            zIndex: searchAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 100],
-              extrapolate: 'clamp',
-            }),
+            opacity: searchAnimation,
           },
         ]}>
         <View style={styles.inputRow}>
@@ -255,21 +290,6 @@ const SearchBar = ({animation, searchAnimation}) => {
           </View>
         </View>
       </Animated.View>
-
-      <TouchableNativeFeedback onPress={openSearch}>
-        <View style={styles.searchBar}>
-          <View style={styles.button}>
-            <Icon name="menu" size={24} />
-          </View>
-          <Text style={styles.placeholder}>Search in emails</Text>
-          <View style={styles.button}>
-            <Image
-              source={require('../assets/me.jpeg')}
-              style={styles.thumbnail}
-            />
-          </View>
-        </View>
-      </TouchableNativeFeedback>
     </Animated.View>
   );
 };
@@ -485,6 +505,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderColor: colors.gray,
   },
   searchBarContainer: {
     position: 'absolute',
@@ -541,5 +563,12 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  searchContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    position: 'absolute',
+    width: '100%',
+    zIndex: 2,
   },
 });
