@@ -198,15 +198,11 @@ const SearchBar = ({animation, searchAnimation}) => {
       style={[
         styles.searchBarContainer,
         {
-          transform: [
-            {
-              translateY: scrollY.interpolate({
-                inputRange: [0, HEIGHT],
-                outputRange: [0, -HEIGHT],
-                extrapolate: 'clamp',
-              }),
-            },
-          ],
+          top: scrollY.interpolate({
+            inputRange: [0, HEIGHT],
+            outputRange: [0, -HEIGHT],
+            extrapolate: 'clamp',
+          }),
         },
       ]}>
       <TouchableNativeFeedback onPress={openSearch}>
@@ -437,7 +433,7 @@ const LARGE_FAB_WIDTH = LARGE_FAB_HEIGHT * 3;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 4,
     backgroundColor: 'white',
   },
   list: {
@@ -557,7 +553,9 @@ const styles = StyleSheet.create({
   searchContainer: {
     backgroundColor: 'white',
     position: 'absolute',
-    width: '100%',
+    left: 0,
+    top: 0,
+    right: 0,
   },
   thumbnail: {
     width: 32,
