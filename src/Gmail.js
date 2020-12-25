@@ -150,41 +150,36 @@ const FAB = ({animation = new Animated.Value(0)}) => {
   );
 };
 
-const SearchBar = ({
-  animation,
-  goBack = () => null,
-  onSearch = () => console.log('search'),
-}) => {
-  const scrollY = Animated.diffClamp(animation, 0, SEARCH_BAR_HEIGHT);
+const SearchBar = ({animation, goBack = () => null}) => {
+  const HEIGHT = SEARCH_BAR_HEIGHT + 16;
+  const scrollY = Animated.diffClamp(animation, 0, HEIGHT);
   return (
     <Animated.View
-      pointerEvents="auto"
       style={[
-        styles.searchBar,
+        styles.searchBarContainer,
         {
           transform: [
             {
               translateY: scrollY.interpolate({
-                inputRange: [0, SEARCH_BAR_HEIGHT],
-                outputRange: [0, -SEARCH_BAR_HEIGHT],
+                inputRange: [0, HEIGHT],
+                outputRange: [0, -HEIGHT],
                 extrapolate: 'clamp',
               }),
             },
           ],
         },
       ]}>
-      <RectButton onPress={goBack} style={styles.button}>
-        <Icon name="menu" size={24} />
-      </RectButton>
-      <Text style={styles.placeholder}>Search in emails</Text>
-      {/* <TextInput
-        editable={false}
-        placeholderTextColor={colors.text}
-        placeholder="Search in emails"
-        style={styles.textInput}
-      /> */}
-      <View style={styles.button}>
-        <Image source={require('../assets/me.jpeg')} style={styles.thumbnail} />
+      <View style={styles.searchBar}>
+        <RectButton onPress={goBack} style={styles.button}>
+          <Icon name="menu" size={24} />
+        </RectButton>
+        <Text style={styles.placeholder}>Search in emails</Text>
+        <View style={styles.button}>
+          <Image
+            source={require('../assets/me.jpeg')}
+            style={styles.thumbnail}
+          />
+        </View>
       </View>
     </Animated.View>
   );
@@ -283,7 +278,7 @@ const avatarColors = [
 const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 
 const AVATAR_SIZE = 40;
-const SEARCH_BAR_HEIGHT = 60;
+const SEARCH_BAR_HEIGHT = 48;
 const BUTTON_SIZE = 48;
 const SMALL_FAB = 56;
 const LARGE_FAB_HEIGHT = 52;
@@ -298,7 +293,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   contentContainer: {
-    paddingTop: SEARCH_BAR_HEIGHT,
+    paddingTop: SEARCH_BAR_HEIGHT + 12,
   },
   label: {
     color: colors.red,
@@ -381,18 +376,21 @@ const styles = StyleSheet.create({
     height: 80,
   },
   searchBar: {
-    position: 'absolute',
-    height: BUTTON_SIZE,
-    width: '92%',
+    height: SEARCH_BAR_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
     elevation: 4,
     alignSelf: 'center',
     backgroundColor: 'white',
     borderRadius: 8,
     paddingHorizontal: 4,
+  },
+  searchBarContainer: {
+    position: 'absolute',
+    width: '100%',
     zIndex: 1000,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   thumbnail: {
     width: 32,
@@ -440,5 +438,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.text,
     fontSize: 16,
+    paddingHorizontal: 4,
   },
 });
