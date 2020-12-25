@@ -169,19 +169,6 @@ const SearchBar = ({animation, goBack = () => console.log('back')}) => {
           ],
         },
       ]}>
-      <RectButton style={styles.searchBar}>
-        <View style={styles.button}>
-          <Icon name="menu" size={24} />
-        </View>
-        <Text style={styles.placeholder}>Search in emails</Text>
-        <View style={styles.button}>
-          <Image
-            source={require('../assets/me.jpeg')}
-            style={styles.thumbnail}
-          />
-        </View>
-      </RectButton>
-
       <View style={[styles.searchBarOverlay]}>
         <View style={styles.inputRow}>
           <View style={styles.button}>
@@ -197,6 +184,19 @@ const SearchBar = ({animation, goBack = () => console.log('back')}) => {
           </View>
         </View>
       </View>
+
+      <RectButton style={styles.searchBar}>
+        <View style={styles.button}>
+          <Icon name="menu" size={24} />
+        </View>
+        <Text style={styles.placeholder}>Search in emails</Text>
+        <View style={styles.button}>
+          <Image
+            source={require('../assets/me.jpeg')}
+            style={styles.thumbnail}
+          />
+        </View>
+      </RectButton>
     </Animated.View>
   );
 };
@@ -411,7 +411,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     paddingHorizontal: 4,
-    zIndex: 100000,
   },
   searchBarContainer: {
     position: 'absolute',
