@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -27,6 +27,11 @@ export default function Gmail() {
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const headerAnimation = useRef(new Animated.Value(0)).current;
   const isAnimating = useRef(false);
+  const [activeMail, setActiveMail] = useState(null);
+
+  const renderItem = useCallback(({item, index}) => {
+    return <Item {...item} onPress={() => setActiveMail(data[index])} />;
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -34,11 +39,12 @@ export default function Gmail() {
       <View style={styles.container}>
         <Animated.FlatList
           data={data}
+          initialNumToRender={2}
           keyExtractor={({id}) => String(id)}
           ref={listRef}
           style={styles.list}
           contentContainerStyle={styles.contentContainer}
-          renderItem={({item}) => <Item {...item} />}
+          renderItem={renderItem}
           refreshControl={
             <RefreshControl
               colors={['green']}
@@ -105,9 +111,63 @@ export default function Gmail() {
         animation={headerAnimation}
         searchAnimation={searchAnimation}
       />
+
+      <View
+        style={[
+          detailStyles.container,
+          {
+            opacity: activeMail ? 1 : 0,
+          },
+        ]}
+        pointerEvents={activeMail ? 'auto' : 'none'}>
+        <View style={detailStyles.header}>
+          <TouchableNativeFeedback onPress={() => setActiveMail(null)}>
+            <View style={styles.button}>
+              <Icon name="arrow-left" size={24} color={colors.gray3} />
+            </View>
+          </TouchableNativeFeedback>
+          <View style={detailStyles.actions}>
+            <View style={styles.button}>
+              <Icon
+                name="archive-arrow-down-outline"
+                size={24}
+                color={colors.gray3}
+              />
+            </View>
+            <View style={styles.button}>
+              <Icon name="trash-can-outline" size={24} color={colors.gray3} />
+            </View>
+            <View style={styles.button}>
+              <Icon name="email-outline" size={24} color={colors.gray3} />
+            </View>
+            <View style={styles.button}>
+              <Icon name="dots-vertical" size={24} color={colors.gray3} />
+            </View>
+          </View>
+        </View>
+        <Animated.ScrollView style={detailStyles.content} />
+      </View>
     </View>
   );
 }
+
+const detailStyles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'white',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  actions: {
+    flexDirection: 'row',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: 'tomato',
+  },
+});
 
 const FAB = ({animation = new Animated.Value(0)}) => {
   return (
@@ -349,41 +409,46 @@ const Header = () => (
 
 const Footer = () => <View style={styles.listFooter} />;
 
-const Item = ({name, date, title, message}) => {
-  return (
-    <TouchableHighlight
-      underlayColor={colors.gray}
-      onPress={() => null}
-      style={styles.itemContainer}>
-      <View style={styles.itemRow}>
-        <View>
-          <Avatar name={name} />
-        </View>
-        <View style={styles.itemContent}>
-          <View style={styles.itemHeader}>
-            <Text style={styles.title} numberOfLines={1}>
-              {name}
-            </Text>
-            <Text style={styles.date}>
-              {moment(date, 'MM/dd/YYYY').format('D MMM')}
-            </Text>
+class Item extends React.Component {
+  onPress = () => this.props.onPress();
+  shouldComponentUpdate = () => false;
+  render() {
+    const {name, date, title, message} = this.props;
+    return (
+      <TouchableHighlight
+        underlayColor={colors.gray}
+        onPress={this.onPress}
+        style={styles.itemContainer}>
+        <View style={styles.itemRow}>
+          <View>
+            <Avatar name={name} />
           </View>
-          <View style={styles.itemSubtitle}>
-            <View style={styles.subtitleContainer}>
-              <Text style={styles.subtitle} numberOfLines={1}>
-                {title}
+          <View style={styles.itemContent}>
+            <View style={styles.itemHeader}>
+              <Text style={styles.title} numberOfLines={1}>
+                {name}
               </Text>
-              <Text style={styles.subtitle} numberOfLines={1}>
-                {message}
+              <Text style={styles.date}>
+                {moment(date, 'MM/dd/YYYY').format('D MMM')}
               </Text>
             </View>
-            <Icon name="star-outline" size={24} color={colors.gray2} />
+            <View style={styles.itemSubtitle}>
+              <View style={styles.subtitleContainer}>
+                <Text style={styles.subtitle} numberOfLines={1}>
+                  {title}
+                </Text>
+                <Text style={styles.subtitle} numberOfLines={1}>
+                  {message}
+                </Text>
+              </View>
+              <Icon name="star-outline" size={24} color={colors.gray2} />
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableHighlight>
-  );
-};
+      </TouchableHighlight>
+    );
+  }
+}
 
 const Avatar = ({name}) => {
   return (
@@ -420,6 +485,7 @@ const colors = {
   gray: '#e7e7e7',
   text: '#5d5d5d',
   gray2: '#a2a2a2',
+  gray3: '#484848',
 };
 
 const avatarColors = [
