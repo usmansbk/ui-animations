@@ -41,10 +41,6 @@ export default function Gmail() {
               outputRange: ['0%', '100%'],
               extrapolate: 'clamp',
             }),
-            width: searchAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['80%', '100%'],
-            }),
           },
         ]}
       />
@@ -610,9 +606,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchContainer: {
-    flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'tomato',
     position: 'absolute',
+    left: 0,
+    top: 0,
     width: '100%',
     zIndex: 2,
   },
