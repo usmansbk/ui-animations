@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 1000,
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 12,
   },
   thumbnail: {
     width: 32,
