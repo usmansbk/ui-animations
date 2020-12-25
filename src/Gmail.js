@@ -22,6 +22,7 @@ export default function Gmail() {
   const listRef = useRef(null);
   const scrollY = useRef(new Animated.Value(0)).current;
   const fabAnimation = useRef(new Animated.Value(0)).current;
+  const isAnimating = useRef(false);
 
   return (
     <View style={styles.container}>
@@ -58,11 +59,16 @@ export default function Gmail() {
                 useNativeDriver: false,
               }).start();
             } else if (Math.abs(velocityY) >= MIN_VELOCITY) {
-              Animated.timing(fabAnimation, {
-                toValue: velocityY < 0 ? 0 : LARGE_FAB_WIDTH,
-                duration: 50,
-                useNativeDriver: false,
-              }).start();
+              if (!isAnimating.current) {
+                isAnimating.current = true;
+                Animated.timing(fabAnimation, {
+                  toValue: velocityY < 0 ? 0 : LARGE_FAB_WIDTH,
+                  duration: 50,
+                  useNativeDriver: false,
+                }).start(() => {
+                  isAnimating.current = false;
+                });
+              }
             }
           }}
           ListHeaderComponent={Header}
