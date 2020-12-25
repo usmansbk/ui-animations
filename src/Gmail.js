@@ -58,17 +58,18 @@ export default function Gmail() {
                 duration: 50,
                 useNativeDriver: false,
               }).start();
-            } else if (Math.abs(velocityY) >= MIN_VELOCITY) {
-              if (!isAnimating.current) {
-                isAnimating.current = true;
-                Animated.timing(fabAnimation, {
-                  toValue: velocityY < 0 ? 0 : LARGE_FAB_WIDTH,
-                  duration: 50,
-                  useNativeDriver: false,
-                }).start(() => {
-                  isAnimating.current = false;
-                });
-              }
+            } else if (
+              Math.abs(velocityY) >= MIN_VELOCITY &&
+              !isAnimating.current
+            ) {
+              isAnimating.current = true;
+              Animated.timing(fabAnimation, {
+                toValue: velocityY < 0 ? 0 : LARGE_FAB_WIDTH,
+                duration: 50,
+                useNativeDriver: false,
+              }).start(() => {
+                isAnimating.current = false;
+              });
             }
           }}
           ListHeaderComponent={Header}
