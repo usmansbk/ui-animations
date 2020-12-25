@@ -23,7 +23,6 @@ const MIN_VELOCITY = 0.7;
  */
 export default function Gmail() {
   const listRef = useRef(null);
-  const scrollY = useRef(new Animated.Value(0)).current;
   const fabAnimation = useRef(new Animated.Value(0)).current;
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const headerAnimation = useRef(new Animated.Value(0)).current;
@@ -55,8 +54,7 @@ export default function Gmail() {
                 velocity: {y: velocityY},
               },
             } = e;
-            scrollY.setValue(y < 0 ? 0 : y); // prevent bounce on Android
-            headerAnimation.setValue(y < 0 ? 0 : y);
+            headerAnimation.setValue(y < 0 ? 0 : y); // prevent bounce on Android
             if (y === 0) {
               Animated.timing(fabAnimation, {
                 toValue: 0,
