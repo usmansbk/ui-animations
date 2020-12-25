@@ -31,19 +31,6 @@ export default function Gmail() {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
-      <Animated.View
-        style={[
-          styles.searchContainer,
-          {
-            height: searchAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['0%', '100%'],
-              extrapolate: 'clamp',
-            }),
-          },
-        ]}
-      />
       <View style={styles.container}>
         <Animated.FlatList
           data={data}
@@ -102,6 +89,19 @@ export default function Gmail() {
         />
         <IconButton name="video-outline" label="Meet" size={30} />
       </View>
+      <SearchBar animation={scrollY} searchAnimation={searchAnimation} />
+      <Animated.View
+        style={[
+          styles.searchContainer,
+          {
+            height: searchAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+              extrapolate: 'clamp',
+            }),
+          },
+        ]}
+      />
     </View>
   );
 }
@@ -606,11 +606,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchContainer: {
-    backgroundColor: 'tomato',
+    backgroundColor: 'white',
     position: 'absolute',
     left: 0,
     top: 0,
     width: '100%',
-    zIndex: 2,
   },
 });
