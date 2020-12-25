@@ -85,49 +85,61 @@ export default function Gmail() {
 
 const FAB = ({animation = new Animated.Value(0)}) => {
   return (
-    <Animated.ScrollView
-      scrollEnabled={false}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.fab}
-      style={[
-        styles.fabContainer,
-        {
-          width: animation.interpolate({
-            inputRange: [0, LARGE_FAB_WIDTH],
-            outputRange: [LARGE_FAB_WIDTH, SMALL_FAB],
-            extrapolate: 'clamp',
-          }),
-          height: animation.interpolate({
-            inputRange: [0, LARGE_FAB_WIDTH],
-            outputRange: [LARGE_FAB_HEIGHT, SMALL_FAB],
-            extrapolate: 'clamp',
-          }),
-          borderRadius: animation.interpolate({
-            inputRange: [0, LARGE_FAB_WIDTH],
-            outputRange: [LARGE_FAB_HEIGHT / 2, SMALL_FAB / 2],
-            extrapolate: 'clamp',
-          }),
-        },
-      ]}>
-      <View style={styles.fabIcon}>
-        <Icon name="pencil-outline" size={24} color={colors.red} />
-      </View>
-      <Animated.Text
+    <TouchableWithoutFeedback>
+      <Animated.ScrollView
+        scrollEnabled={false}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.fab}
         style={[
-          styles.label,
-          styles.fabLabel,
+          styles.fabContainer,
           {
-            opacity: animation.interpolate({
-              inputRange: [0, SMALL_FAB / 2, LARGE_FAB_WIDTH],
-              outputRange: [1, 1, 0],
+            width: animation.interpolate({
+              inputRange: [0, LARGE_FAB_WIDTH],
+              outputRange: [LARGE_FAB_WIDTH, SMALL_FAB],
+              extrapolate: 'clamp',
+            }),
+            height: animation.interpolate({
+              inputRange: [0, LARGE_FAB_WIDTH],
+              outputRange: [LARGE_FAB_HEIGHT, SMALL_FAB],
+              extrapolate: 'clamp',
+            }),
+            borderRadius: animation.interpolate({
+              inputRange: [0, LARGE_FAB_WIDTH],
+              outputRange: [LARGE_FAB_HEIGHT / 2, SMALL_FAB / 2],
               extrapolate: 'clamp',
             }),
           },
         ]}>
-        Compose
-      </Animated.Text>
-    </Animated.ScrollView>
+        <Animated.View
+          style={[
+            styles.fabIcon,
+            {
+              borderRadius: animation.interpolate({
+                inputRange: [0, LARGE_FAB_WIDTH],
+                outputRange: [LARGE_FAB_HEIGHT / 2, SMALL_FAB / 2],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}>
+          <Icon name="pencil-outline" size={24} color={colors.red} />
+        </Animated.View>
+        <Animated.Text
+          style={[
+            styles.label,
+            styles.fabLabel,
+            {
+              opacity: animation.interpolate({
+                inputRange: [0, SMALL_FAB / 2, LARGE_FAB_WIDTH],
+                outputRange: [1, 0, 0],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}>
+          Compose
+        </Animated.Text>
+      </Animated.ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -240,7 +252,7 @@ const IconButton = ({name, label, focused, size = 24, onPress}) => {
 };
 
 const colors = {
-  red: '#ea4335',
+  red: '#DB4437',
   gray: '#e7e7e7',
   text: '#5d5d5d',
   gray2: '#a2a2a2',
@@ -260,8 +272,8 @@ const getColor = (name = '') => avatarColors[name.length % avatarColors.length];
 const AVATAR_SIZE = 40;
 const SEARCH_BAR_HEIGHT = 60;
 const BUTTON_SIZE = 48;
-const SMALL_FAB = 60;
-const LARGE_FAB_HEIGHT = 54;
+const SMALL_FAB = 56;
+const LARGE_FAB_HEIGHT = 52;
 const LARGE_FAB_WIDTH = LARGE_FAB_HEIGHT * 3;
 
 const styles = StyleSheet.create({
@@ -405,10 +417,10 @@ const styles = StyleSheet.create({
     height: SMALL_FAB,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: SMALL_FAB / 2,
     padding: 8,
   },
   fabLabel: {
     flex: 1,
+    fontWeight: '700',
   },
 });
