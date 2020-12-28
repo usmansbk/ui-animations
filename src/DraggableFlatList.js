@@ -6,6 +6,8 @@ import {
   Animated,
   TouchableWithoutFeedback,
   PanResponder,
+  FlatList,
+  // Dimensions,
 } from 'react-native';
 
 const colors = [
@@ -24,6 +26,8 @@ const colors = [
   '#f39c12',
   '#d35400',
 ];
+
+// const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 const MIN_ITEM_HEIGHT = 40;
 const MAX_ITEM_HEIGHT = 90;
 const DIFF_HEIGHT = MAX_ITEM_HEIGHT - MIN_ITEM_HEIGHT;
@@ -47,8 +51,9 @@ export default class DraggableFlatList extends React.Component {
 
   itemRefs = {};
   activePositionY = new Animated.Value(0);
-  previousSize = new Animated.ValueXY();
+  activeSize = new Animated.ValueXY();
   scrollY = new Animated.Value(0);
+  animating = false;
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => {
@@ -57,25 +62,26 @@ export default class DraggableFlatList extends React.Component {
       }
       return false;
     },
-    onPanResponderGrant: (e, {moveY, y0}) => {
-      console.log(moveY);
-    },
     onPanResponderMove: (_, {dy}) => {
-      this.scrollY.setValue(dy);
+      if (this.state.activeItem) {
+        this.scrollY.setValue(dy);
+      }
     },
     onPanResponderRelease: () => this.reset(),
     onPanResponderTerminate: () => this.reset(),
   });
 
   reset = () => {
-    Animated.timing(this.scrollY, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start(() => {
-      this.setState({activeItem: null});
-      this.activePositionY.setValue(0);
-    });
+    if (!this.animating) {
+      this.animating = true;
+      Animated.timing(this.scrollY, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        this.setState({activeItem: null}, () => (this.animating = false));
+      });
+    }
   };
 
   renderItem = ({item, index}) => {
@@ -89,16 +95,18 @@ export default class DraggableFlatList extends React.Component {
         onLongPress={() => {
           this.itemRefs[index].measure(
             (_x, _y, width, height, _pageX, pageY) => {
-              this.previousSize.setValue({
+              this.activeSize.setValue({
                 x: width,
                 y: height,
               });
-              this.activePositionY.setValue(pageY);
-              this.setState({activeItem: item});
+              this.setState({activeItem: item}, () => {
+                this.activePositionY.setValue(pageY);
+              });
             },
           );
         }}>
         <View
+          onTouchEnd={this.reset}
           ref={(ref) => (this.itemRefs[index] = ref)}
           style={[
             styles.itemContainer,
@@ -126,7 +134,7 @@ export default class DraggableFlatList extends React.Component {
           styles.activeItem,
           {
             backgroundColor: item.color,
-            height: item.height + 2,
+            height: Animated.add(this.activeSize.y, 2),
             top: this.activePositionY,
             transform: [
               {
@@ -135,9 +143,7 @@ export default class DraggableFlatList extends React.Component {
             ],
           },
         ]}>
-        <Text style={[styles.text, {fontSize: FONT_SIZE + 4}]}>
-          {item.text}
-        </Text>
+        <Text style={styles.text}>{item.text}</Text>
       </Animated.View>
     );
   };
@@ -147,7 +153,7 @@ export default class DraggableFlatList extends React.Component {
 
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
-        <Animated.FlatList
+        <FlatList
           scrollEnabled={!activeItem}
           data={data}
           keyExtractor={(item) => item.id}
