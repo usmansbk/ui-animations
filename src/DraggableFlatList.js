@@ -104,7 +104,6 @@ export default class DraggableFlatList extends React.Component {
       const dragY = this.dragY;
       const dragDown = absDY - dragY > 0;
 
-      console.log(absDY, dragY);
       let nextIndex;
 
       const delta = absDY - dragY;
@@ -114,8 +113,9 @@ export default class DraggableFlatList extends React.Component {
         nextIndex = currentIndex - 1;
       }
 
-      if (nextIndex >= 0 && nextIndex <= data.length - 1) {
-        const activeItem = data[activeIndex];
+      const activeItem = data[activeIndex];
+
+      if (activeItem && nextIndex >= 0 && nextIndex <= data.length - 1) {
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
         const activeItemRef = this.itemRefs[activeItem.id];
@@ -128,24 +128,21 @@ export default class DraggableFlatList extends React.Component {
               Math.abs(absDY - dragY) >= nextHeight &&
               this.currentIndex !== nextIndex
             ) {
-              if (!this.animating) {
-                this.animating = true;
-                Animated.timing(nextAnim, {
-                  toValue: dragDown ? -currentHeight : currentHeight,
-                  duration: 200,
-                  useNativeDriver: false,
-                }).start(() => {
-                  this.animating = false;
-                  this.currentIndex = nextIndex;
-                  this.dragY = absDY;
-                  nextAnim.flattenOffset();
-                });
-              }
+              Animated.timing(nextAnim, {
+                toValue: dragDown ? -currentHeight : currentHeight,
+                duration: 200,
+                useNativeDriver: false,
+              }).start(() => {
+                this.currentIndex = nextIndex;
+                this.dragY = absDY;
+                nextAnim.flattenOffset();
+              });
             }
           });
         });
       }
     },
+    onPanResponderTerminationRequest: () => true,
     onPanResponderTerminate: () => {
       this.reset();
     },
@@ -173,9 +170,9 @@ export default class DraggableFlatList extends React.Component {
       },
       () => {
         this.dragY = 0;
+        this.animating = false;
         this.currentIndex = null;
         this.scrollY.setValue(0);
-        this.animating = false;
         this.activePositionY.setValue(0);
         this.activeHeight.setValue(0);
         Object.values(this.animations).forEach((anim) => anim.setValue(0));
