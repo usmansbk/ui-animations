@@ -71,16 +71,17 @@ export default class DraggableFlatList extends React.Component {
       }
 
       const {activeIndex, data} = this.state;
-      const activeItem = data[activeIndex];
 
       const currentIndex = this.currentIndex || activeIndex;
-      const absMoveY = Math.abs(dy);
+      const absDY = Math.abs(dy);
       const dragY = this.dragY || 0;
-      const dragDown = absMoveY - dragY > 0;
+      const dragDown = absDY - dragY > 0;
 
       const nextIndex = dragDown ? currentIndex + 1 : currentIndex - 1;
+      console.log(nextIndex);
 
       if (nextIndex >= 0 && nextIndex <= data.length - 1) {
+        const activeItem = data[activeIndex];
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
         const activeItemRef = this.itemRefs[activeItem.id];
@@ -90,7 +91,7 @@ export default class DraggableFlatList extends React.Component {
             const nextAnim = this.animations[nextIndex];
 
             if (
-              Math.abs(absMoveY - dragY) >= nextHeight &&
+              Math.abs(absDY - dragY) >= nextHeight &&
               this.currentIndex !== nextIndex
             ) {
               if (!this.animating) {
@@ -102,7 +103,7 @@ export default class DraggableFlatList extends React.Component {
                 }).start(() => {
                   this.animating = false;
                   this.currentIndex = nextIndex;
-                  this.dragY = absMoveY;
+                  this.dragY = absDY;
                   nextAnim.flattenOffset();
                 });
               }
