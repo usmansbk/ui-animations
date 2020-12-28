@@ -5,6 +5,7 @@ import {
   View,
   Animated,
   TouchableWithoutFeedback,
+  PanResponder,
 } from 'react-native';
 
 const colors = [
@@ -46,6 +47,19 @@ export default class DraggableFlatList extends React.Component {
 
   itemRefs = {};
   activePositionY = new Animated.Value(0);
+
+  _panY = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderEnd: () => {},
+    onPanResponderRelease: () => {
+      this.reset();
+    },
+    onPanResponderTerminate: () => {
+      this.reset();
+    },
+  });
+
+  reset = () => this.setState({activeItem: null});
 
   renderItem = ({item, index}) => {
     const activeStyle = {
@@ -100,9 +114,12 @@ export default class DraggableFlatList extends React.Component {
 
   render() {
     const {activeItem} = this.state;
+    const panHandlers = activeItem ? this._panY.panHandlers : {};
+
     return (
-      <Animated.View style={styles.container}>
+      <Animated.View {...panHandlers} style={styles.container}>
         <Animated.FlatList
+          scrollEnabled={!activeItem}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
