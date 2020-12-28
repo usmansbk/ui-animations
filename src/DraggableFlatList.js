@@ -50,18 +50,24 @@ export default class DraggableFlatList extends React.Component {
   scrollY = new Animated.Value(0);
 
   _panY = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => {
+      if (this.state.activeItem) {
+        return true;
+      }
+      return false;
+    },
+    onPanResponderGrant: (e, {moveY, y0}) => {
+      console.log(moveY);
+    },
     onPanResponderMove: (_, {dy}) => {
-      console.log(dy);
       this.scrollY.setValue(dy);
     },
-    onPanResponderRelease: () => {
-      this.reset();
-      this.scrollY.setValue(0);
-    },
+    onPanResponderRelease: () => this.reset(),
+    onPanResponderTerminate: () => this.reset(),
   });
 
-  reset = () => this.setState({activeItem: null});
+  reset = () =>
+    this.setState({activeItem: null}, () => this.scrollY.setValue(0));
 
   renderItem = ({item, index}) => {
     const activeStyle = {
@@ -96,8 +102,12 @@ export default class DraggableFlatList extends React.Component {
   };
 
   renderActiveItem = (item) => {
+    if (!item) {
+      return null;
+    }
     return (
       <Animated.View
+        pointerEvents="none"
         style={[
           styles.itemContainer,
           styles.activeItem,
@@ -123,15 +133,15 @@ export default class DraggableFlatList extends React.Component {
     const {activeItem} = this.state;
 
     return (
-      <Animated.View {...this._panY.panHandlers} style={styles.container}>
+      <View style={styles.container} {...this._panY.panHandlers}>
         <Animated.FlatList
           scrollEnabled={!activeItem}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
         />
-        {!!activeItem && this.renderActiveItem(activeItem)}
-      </Animated.View>
+        {this.renderActiveItem(activeItem)}
+      </View>
     );
   }
 }
