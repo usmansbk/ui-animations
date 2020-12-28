@@ -28,6 +28,7 @@ const MAX_ITEM_HEIGHT = 90;
 const DIFF_HEIGHT = MAX_ITEM_HEIGHT - MIN_ITEM_HEIGHT;
 const getColor = (index) => colors[index % colors.length];
 const getRandomHeight = () => Math.random() * DIFF_HEIGHT + MIN_ITEM_HEIGHT;
+const FONT_SIZE = 20;
 
 const data = Array.from(
   new Array(50).fill(0).map((_, index) => ({
@@ -67,17 +68,16 @@ export default class DraggableFlatList extends React.Component {
 
   renderActiveItem = (item) => {
     return (
-      <TouchableWithoutFeedback
-        onLongPress={() => this.setState({activeItem: item})}>
-        <View
-          style={[
-            styles.itemContainer,
-            styles.activeItem,
-            {backgroundColor: item.color, height: item.height + 2},
-          ]}>
-          <Text style={styles.text}>{item.text}</Text>
-        </View>
-      </TouchableWithoutFeedback>
+      <View
+        style={[
+          styles.itemContainer,
+          styles.activeItem,
+          {backgroundColor: item.color, height: item.height + 2},
+        ]}>
+        <Text style={[styles.text, {fontSize: FONT_SIZE + 2}]}>
+          {item.text}
+        </Text>
+      </View>
     );
   };
 
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontSize: 20,
+    fontSize: FONT_SIZE,
     fontWeight: 'bold',
     color: 'white',
   },
