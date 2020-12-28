@@ -30,10 +30,11 @@ const MIN_ITEM_HEIGHT = 40;
 const MAX_ITEM_HEIGHT = 90;
 const DIFF_HEIGHT = MAX_ITEM_HEIGHT - MIN_ITEM_HEIGHT;
 const getColor = (index) => colors[index % colors.length];
-const getRandomHeight = () => Math.random() * DIFF_HEIGHT + MIN_ITEM_HEIGHT;
+const getRandomHeight = () =>
+  Math.floor(Math.random() * DIFF_HEIGHT + MIN_ITEM_HEIGHT);
 const FONT_SIZE = 20;
 
-const data = Array.from(
+const listData = Array.from(
   new Array(50).fill(0).map((_, index) => ({
     id: index + '',
     index,
@@ -45,6 +46,7 @@ const data = Array.from(
 
 export default class DraggableFlatList extends React.Component {
   state = {
+    data: listData,
     activeItem: null,
     nextItem: null,
   };
@@ -70,27 +72,37 @@ export default class DraggableFlatList extends React.Component {
         this.scrollY.setValue(dy);
       }
 
-      const {activeItem} = this.state;
+      const {activeItem, data} = this.state;
 
-      const nextIndex = dy > 0 ? activeItem.index + 1 : activeItem.index - 1;
-      if (nextIndex >= 0 || nextIndex <= data.length - 1) {
+      const currentIndex = this.currentIndex || activeItem.index;
+      const absMoveY = Math.abs(dy);
+      const dragY = this.dragY || 0;
+      const dragDown = absMoveY - dragY > 0;
+
+      const nextIndex = dragDown ? currentIndex + 1 : currentIndex - 1;
+
+      if (nextIndex >= 0 && nextIndex <= data.length - 1) {
         const nextItemRef = this.itemRefs[nextIndex];
         const activeItemRef = this.itemRefs[activeItem.index];
+
         nextItemRef.measure((_x, _y, _width, nextHeight) => {
           activeItemRef.measure((_tx, _ty, _twidth, currentHeight) => {
             const nextAnim = this.animations[nextIndex];
 
-            const absMoveY = Math.abs(dy);
-
-            if (absMoveY >= nextHeight) {
+            if (
+              Math.abs(absMoveY - dragY) >= nextHeight &&
+              this.currentIndex !== nextIndex
+            ) {
               if (!this.animating) {
                 this.animating = true;
                 Animated.timing(nextAnim, {
-                  toValue: dy > 0 ? -currentHeight : currentHeight,
+                  toValue: dragDown ? -currentHeight : currentHeight,
                   duration: 200,
                   useNativeDriver: false,
                 }).start(() => {
                   this.animating = false;
+                  this.currentIndex = nextIndex;
+                  this.dragY = absMoveY;
                 });
               }
             }
@@ -98,12 +110,21 @@ export default class DraggableFlatList extends React.Component {
         });
       }
     },
-    onPanResponderRelease: () => this.reset(),
-    onPanResponderTerminate: () => this.reset(),
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderTerminate: () => {
+      this.reset();
+    },
   });
 
   reset = () => {
-    this.setState({activeItem: null});
+    this.setState(
+      {
+        activeItem: null,
+      },
+      () => {
+        this.scrollY.setValue(0);
+      },
+    );
   };
 
   renderItem = ({item, index}) => {
@@ -179,7 +200,7 @@ export default class DraggableFlatList extends React.Component {
   };
 
   render() {
-    const {activeItem} = this.state;
+    const {activeItem, data} = this.state;
 
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
@@ -188,8 +209,6 @@ export default class DraggableFlatList extends React.Component {
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
-          onLayout={(e) => (this.listHeight = e.nativeEvent.layout.height)}
-          onScroll={(e) => (this.scrollOffset = e.nativeEvent.contentOffset.y)}
         />
         {this.renderActiveItem(activeItem)}
       </View>
