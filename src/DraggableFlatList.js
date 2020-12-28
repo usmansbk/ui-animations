@@ -137,7 +137,7 @@ export default class DraggableFlatList extends React.Component {
           {
             backgroundColor: item.color,
             height: Animated.add(this.activeSize.y, 2),
-            top: this.activePositionY,
+            top: Animated.add(this.activePositionY, -1),
             transform: [
               {
                 translateY: this.scrollY,
