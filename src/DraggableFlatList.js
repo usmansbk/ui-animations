@@ -44,14 +44,27 @@ export default class DraggableFlatList extends React.Component {
     activeItem: null,
   };
 
-  renderItem = ({item}) => {
+  itemRefs = {};
+  activePositionY = new Animated.Value(0);
+
+  renderItem = ({item, index}) => {
     const activeStyle = {
       opacity: this.state.activeItem?.id === item.id ? 0 : 1,
     };
+
     return (
       <TouchableWithoutFeedback
-        onLongPress={() => this.setState({activeItem: item})}>
+        onLayout={() => null}
+        onLongPress={() => {
+          this.itemRefs[index].measure(
+            (_x, _y, _width, _height, _pageX, pageY) => {
+              this.activePositionY.setValue(pageY);
+              this.setState({activeItem: item});
+            },
+          );
+        }}>
         <View
+          ref={(ref) => (this.itemRefs[index] = ref)}
           style={[
             styles.itemContainer,
             {
@@ -68,16 +81,20 @@ export default class DraggableFlatList extends React.Component {
 
   renderActiveItem = (item) => {
     return (
-      <View
+      <Animated.View
         style={[
           styles.itemContainer,
           styles.activeItem,
-          {backgroundColor: item.color, height: item.height + 2},
+          {
+            backgroundColor: item.color,
+            height: item.height + 2,
+            top: this.activePositionY,
+          },
         ]}>
         <Text style={[styles.text, {fontSize: FONT_SIZE + 2}]}>
           {item.text}
         </Text>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -112,6 +129,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   activeItem: {
-    elevation: 24,
+    position: 'absolute',
+    width: '100%',
+    elevation: 32,
   },
 });
