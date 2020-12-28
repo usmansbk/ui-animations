@@ -178,7 +178,7 @@ export default class DraggableFlatList extends React.Component {
         }}>
         <Animated.View
           onTouchEnd={this.reset}
-          ref={(ref) => (this.itemRefs[index] = ref)}
+          ref={(ref) => (this.itemRefs[item.id] = ref)}
           style={[
             styles.itemContainer,
             {
