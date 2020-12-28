@@ -17,11 +17,11 @@ const colors = [
   '#f39c12',
   '#d35400',
 ];
-const MIN_HEIGHT = 40;
-const MAX_HEIGHT = 90;
-const DIFF_HEIGHT = MAX_HEIGHT - MIN_HEIGHT;
+const MIN_ITEM_HEIGHT = 40;
+const MAX_ITEM_HEIGHT = 90;
+const DIFF_HEIGHT = MAX_ITEM_HEIGHT - MIN_ITEM_HEIGHT;
 const getColor = (index) => colors[index % colors.length];
-const getRandomHeight = () => Math.random() * DIFF_HEIGHT + MIN_HEIGHT;
+const getRandomHeight = () => Math.random() * DIFF_HEIGHT + MIN_ITEM_HEIGHT;
 
 const data = Array.from(
   new Array(50).fill(0).map((_, index) => ({
