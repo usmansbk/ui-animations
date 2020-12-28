@@ -1,5 +1,11 @@
 import React from 'react';
-import {StyleSheet, Text, View, Animated} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Animated,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 const colors = [
   '#3498db',
@@ -32,27 +38,62 @@ const data = Array.from(
   })),
 );
 
-export default function DraggableFlatList() {
-  const renderItem = ({item}) => {
+export default class DraggableFlatList extends React.Component {
+  state = {
+    activeItem: null,
+  };
+
+  renderItem = ({item}) => {
+    const activeStyle = {
+      opacity: this.state.activeItem?.id === item.id ? 0 : 1,
+    };
     return (
-      <View
-        style={[
-          styles.itemContainer,
-          {backgroundColor: item.color, height: item.height},
-        ]}>
-        <Text style={styles.text}>{item.text}</Text>
-      </View>
+      <TouchableWithoutFeedback
+        onLongPress={() => this.setState({activeItem: item})}>
+        <View
+          style={[
+            styles.itemContainer,
+            {
+              backgroundColor: item.color,
+              height: item.height,
+            },
+            activeStyle,
+          ]}>
+          <Text style={styles.text}>{item.text}</Text>
+        </View>
+      </TouchableWithoutFeedback>
     );
   };
-  return (
-    <Animated.View style={styles.container}>
-      <Animated.FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
-    </Animated.View>
-  );
+
+  renderActiveItem = (item) => {
+    return (
+      <TouchableWithoutFeedback
+        onLongPress={() => this.setState({activeItem: item})}>
+        <View
+          style={[
+            styles.itemContainer,
+            styles.activeItem,
+            {backgroundColor: item.color, height: item.height + 2},
+          ]}>
+          <Text style={styles.text}>{item.text}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
+
+  render() {
+    const {activeItem} = this.state;
+    return (
+      <Animated.View style={styles.container}>
+        <Animated.FlatList
+          data={data}
+          keyExtractor={(item) => item.id}
+          renderItem={this.renderItem}
+        />
+        {!!activeItem && this.renderActiveItem(activeItem)}
+      </Animated.View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -69,5 +110,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
+  },
+  activeItem: {
+    elevation: 24,
   },
 });
