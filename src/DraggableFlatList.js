@@ -47,6 +47,7 @@ export default class DraggableFlatList extends React.Component {
 
   itemRefs = {};
   activePositionY = new Animated.Value(0);
+  previousSize = new Animated.ValueXY();
   scrollY = new Animated.Value(0);
 
   _panY = PanResponder.create({
@@ -66,11 +67,16 @@ export default class DraggableFlatList extends React.Component {
     onPanResponderTerminate: () => this.reset(),
   });
 
-  reset = () =>
-    this.setState({activeItem: null}, () => {
-      this.scrollY.setValue(0);
+  reset = () => {
+    Animated.timing(this.scrollY, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => {
+      this.setState({activeItem: null});
       this.activePositionY.setValue(0);
     });
+  };
 
   renderItem = ({item, index}) => {
     const activeStyle = {
@@ -82,7 +88,11 @@ export default class DraggableFlatList extends React.Component {
         onLayout={() => null}
         onLongPress={() => {
           this.itemRefs[index].measure(
-            (_x, _y, _width, _height, _pageX, pageY) => {
+            (_x, _y, width, height, _pageX, pageY) => {
+              this.previousSize.setValue({
+                x: width,
+                y: height,
+              });
               this.activePositionY.setValue(pageY);
               this.setState({activeItem: item});
             },
@@ -138,6 +148,7 @@ export default class DraggableFlatList extends React.Component {
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
         <Animated.FlatList
+          scrollEnabled={!activeItem}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
