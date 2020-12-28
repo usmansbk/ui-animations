@@ -138,7 +138,6 @@ export default class DraggableFlatList extends React.Component {
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
         <Animated.FlatList
-          // scrollEnabled={!activeItem}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
