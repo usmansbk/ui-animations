@@ -37,7 +37,6 @@ const FONT_SIZE = 20;
 const listData = Array.from(
   new Array(50).fill(0).map((_, index) => ({
     id: index + '',
-    index,
     text: index,
     color: getColor(index),
     height: getRandomHeight(),
@@ -47,34 +46,34 @@ const listData = Array.from(
 export default class DraggableFlatList extends React.Component {
   state = {
     data: listData,
-    activeItem: null,
-    nextItem: null,
+    activeIndex: null,
   };
 
   itemRefs = {};
+  animations = {};
 
   activePositionY = new Animated.Value(0);
   activeHeight = new Animated.Value(0);
   scrollY = new Animated.Value(0);
 
   animating = false;
-  animations = {};
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => {
-      if (this.state.activeItem) {
+      if (this.state.activeIndex) {
         return true;
       }
       return false;
     },
     onPanResponderMove: (_, {dy}) => {
-      if (this.state.activeItem) {
+      if (this.state.activeIndex) {
         this.scrollY.setValue(dy);
       }
 
-      const {activeItem, data} = this.state;
+      const {activeIndex, data} = this.state;
+      const activeItem = data[activeIndex];
 
-      const currentIndex = this.currentIndex || activeItem.index;
+      const currentIndex = this.currentIndex || activeIndex;
       const absMoveY = Math.abs(dy);
       const dragY = this.dragY || 0;
       const dragDown = absMoveY - dragY > 0;
@@ -120,28 +119,23 @@ export default class DraggableFlatList extends React.Component {
   reset = () => {
     this.setState(
       (state) => {
-        const {activeItem, data} = state;
+        const {activeIndex, data} = state;
+        const activeItem = data[activeIndex];
         if (
           activeItem &&
           this.currentIndex &&
-          activeItem.index !== this.currentIndex
+          activeIndex !== this.currentIndex
         ) {
           const swapped = [...data];
-          swapped[activeItem.index] = Object.assign(
-            {},
-            data[this.currentIndex],
-            {index: activeItem.index},
-          );
-          swapped[this.currentIndex] = Object.assign({}, activeItem, {
-            index: this.currentIndex,
-          });
+          swapped[activeIndex] = data[this.currentIndex];
+          swapped[this.currentIndex] = activeItem;
           return {
-            activeItem: null,
+            activeIndex: null,
             data: swapped,
           };
         }
         return {
-          activeItem: null,
+          activeIndex: null,
         };
       },
       () => {
@@ -154,7 +148,8 @@ export default class DraggableFlatList extends React.Component {
   };
 
   renderItem = ({item, index}) => {
-    const {activeItem} = this.state;
+    const {activeIndex, data} = this.state;
+    const activeItem = data[activeIndex];
     const activeStyle = {
       opacity: activeItem?.id === item.id ? 0 : 1,
     };
@@ -175,7 +170,7 @@ export default class DraggableFlatList extends React.Component {
           this.itemRefs[item.id].measure(
             (_x, _y, _width, height, _pageX, pageY) => {
               this.activeHeight.setValue(height);
-              this.setState({activeItem: item}, () => {
+              this.setState({activeIndex: index}, () => {
                 this.activePositionY.setValue(pageY);
               });
             },
@@ -199,7 +194,8 @@ export default class DraggableFlatList extends React.Component {
     );
   };
 
-  renderActiveItem = (item) => {
+  renderActiveItem = (index) => {
+    const item = this.state.data[index];
     if (!item) {
       return null;
     }
@@ -226,17 +222,17 @@ export default class DraggableFlatList extends React.Component {
   };
 
   render() {
-    const {activeItem, data} = this.state;
+    const {activeIndex, data} = this.state;
 
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
         <FlatList
-          scrollEnabled={!activeItem}
+          scrollEnabled={!activeIndex}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
         />
-        {this.renderActiveItem(activeItem)}
+        {this.renderActiveItem(activeIndex)}
       </View>
     );
   }
