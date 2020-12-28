@@ -38,6 +38,7 @@ const FONT_SIZE = 20;
 const data = Array.from(
   new Array(50).fill(0).map((_, index) => ({
     id: index + '',
+    index,
     text: index,
     color: getColor(index),
     height: getRandomHeight(),
@@ -85,8 +86,9 @@ export default class DraggableFlatList extends React.Component {
   };
 
   renderItem = ({item, index}) => {
+    const {activeItem} = this.state;
     const activeStyle = {
-      opacity: this.state.activeItem?.id === item.id ? 0 : 1,
+      opacity: activeItem?.id === item.id ? 0 : 1,
     };
 
     return (
@@ -105,7 +107,7 @@ export default class DraggableFlatList extends React.Component {
             },
           );
         }}>
-        <View
+        <Animated.View
           onTouchEnd={this.reset}
           ref={(ref) => (this.itemRefs[index] = ref)}
           style={[
@@ -117,7 +119,7 @@ export default class DraggableFlatList extends React.Component {
             activeStyle,
           ]}>
           <Text style={styles.text}>{item.text}</Text>
-        </View>
+        </Animated.View>
       </TouchableWithoutFeedback>
     );
   };
