@@ -1,6 +1,6 @@
 import React from 'react';
-import Banner from './src/TwitterBanner';
+import DraggableList from './src/DraggableFlatList';
 
 export default function App() {
-  return <Banner />;
+  return <DraggableList />;
 }
