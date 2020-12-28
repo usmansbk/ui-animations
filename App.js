@@ -1,6 +1,6 @@
 import React from 'react';
-import Gmail from './src/Gmail';
+import Banner from './src/TwitterBanner';
 
 export default function App() {
-  return <Gmail />;
+  return <Banner />;
 }
