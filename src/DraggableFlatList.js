@@ -67,7 +67,10 @@ export default class DraggableFlatList extends React.Component {
   });
 
   reset = () =>
-    this.setState({activeItem: null}, () => this.scrollY.setValue(0));
+    this.setState({activeItem: null}, () => {
+      this.scrollY.setValue(0);
+      this.activePositionY.setValue(0);
+    });
 
   renderItem = ({item, index}) => {
     const activeStyle = {
@@ -135,7 +138,7 @@ export default class DraggableFlatList extends React.Component {
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
         <Animated.FlatList
-          scrollEnabled={!activeItem}
+          // scrollEnabled={!activeItem}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
