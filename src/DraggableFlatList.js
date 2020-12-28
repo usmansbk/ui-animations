@@ -43,6 +43,10 @@ const listData = Array.from(
   })),
 );
 
+/**
+ * I got this function from BenAwad code, which he got from StackOverflow
+ * https://github.com/benawad/drag-and-drop-flatlist/blob/1_reordering/App.tsx
+ */
 function immutableMove(arr, from, to) {
   return arr.reduce((prev, current, idx, self) => {
     if (from === to) {
