@@ -43,6 +43,27 @@ const listData = Array.from(
   })),
 );
 
+function immutableMove(arr, from, to) {
+  return arr.reduce((prev, current, idx, self) => {
+    if (from === to) {
+      prev.push(current);
+    }
+    if (idx === from) {
+      return prev;
+    }
+    if (from < to) {
+      prev.push(current);
+    }
+    if (idx === to) {
+      prev.push(self[from]);
+    }
+    if (from > to) {
+      prev.push(current);
+    }
+    return prev;
+  }, []);
+}
+
 export default class DraggableFlatList extends React.Component {
   state = {
     data: listData,
@@ -127,12 +148,10 @@ export default class DraggableFlatList extends React.Component {
           this.currentIndex &&
           activeIndex !== this.currentIndex
         ) {
-          const swapped = [...data];
-          swapped[activeIndex] = data[this.currentIndex];
-          swapped[this.currentIndex] = activeItem;
+          const moved = immutableMove(data, activeIndex, this.currentIndex);
           return {
             activeIndex: null,
-            data: swapped,
+            data: moved,
           };
         }
         return {
