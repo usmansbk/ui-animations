@@ -139,6 +139,7 @@ export default class DraggableFlatList extends React.Component {
         };
       },
       () => {
+        this.currentIndex = undefined;
         this.scrollY.setValue(0);
         this.activePositionY.setValue(0);
         this.activeHeight.setValue(0);
