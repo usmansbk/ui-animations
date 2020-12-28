@@ -104,6 +104,7 @@ export default class DraggableFlatList extends React.Component {
       const dragY = this.dragY;
       const dragDown = absDY - dragY > 0;
 
+      console.log(absDY, dragY);
       let nextIndex;
 
       const delta = absDY - dragY;
