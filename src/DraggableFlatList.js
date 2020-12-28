@@ -72,7 +72,7 @@ export default class DraggableFlatList extends React.Component {
   });
 
   reset = () => {
-    if (!this.animating) {
+    if (!this.animating && this.state.activeItem) {
       this.animating = true;
       Animated.timing(this.scrollY, {
         toValue: 0,
