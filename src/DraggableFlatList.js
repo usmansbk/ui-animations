@@ -7,7 +7,6 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   FlatList,
-  // Dimensions,
 } from 'react-native';
 
 const colors = [
@@ -27,7 +26,6 @@ const colors = [
   '#d35400',
 ];
 
-// const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 const MIN_ITEM_HEIGHT = 40;
 const MAX_ITEM_HEIGHT = 90;
 const DIFF_HEIGHT = MAX_ITEM_HEIGHT - MIN_ITEM_HEIGHT;
@@ -160,6 +158,8 @@ export default class DraggableFlatList extends React.Component {
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
+          onLayout={(e) => (this.listHeight = e.nativeEvent.layout.height)}
+          onScroll={(e) => (this.scrollOffset = e.nativeEvent.contentOffset.y)}
         />
         {this.renderActiveItem(activeItem)}
       </View>
