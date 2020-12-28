@@ -87,13 +87,13 @@ export default class DraggableFlatList extends React.Component {
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => {
-      if (this.state.activeIndex) {
+      if (this.state.activeIndex >= 0) {
         return true;
       }
       return false;
     },
     onPanResponderMove: (_, {dy}) => {
-      if (this.state.activeIndex) {
+      if (this.state.activeIndex >= 0) {
         this.scrollY.setValue(dy);
       }
 
@@ -104,8 +104,14 @@ export default class DraggableFlatList extends React.Component {
       const dragY = this.dragY;
       const dragDown = absDY - dragY > 0;
 
-      const nextIndex = dragDown ? currentIndex + 1 : currentIndex - 1;
-      console.log(nextIndex);
+      let nextIndex;
+
+      const delta = absDY - dragY;
+      if (delta > 0 && currentIndex < data.length) {
+        nextIndex = currentIndex + 1;
+      } else if (delta < 0 && currentIndex > 0) {
+        nextIndex = currentIndex - 1;
+      }
 
       if (nextIndex >= 0 && nextIndex <= data.length - 1) {
         const activeItem = data[activeIndex];
@@ -168,6 +174,7 @@ export default class DraggableFlatList extends React.Component {
         this.dragY = 0;
         this.currentIndex = null;
         this.scrollY.setValue(0);
+        this.animating = false;
         this.activePositionY.setValue(0);
         this.activeHeight.setValue(0);
         Object.values(this.animations).forEach((anim) => anim.setValue(0));
