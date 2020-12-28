@@ -63,7 +63,7 @@ export default class DraggableFlatList extends React.Component {
       }
       return false;
     },
-    onPanResponderMove: (_, {dy}) => {
+    onPanResponderMove: (_, {dy, moveY}) => {
       if (this.state.activeItem) {
         this.scrollY.setValue(dy);
       }
