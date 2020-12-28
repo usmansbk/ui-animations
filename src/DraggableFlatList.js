@@ -82,8 +82,9 @@ export default class DraggableFlatList extends React.Component {
       const nextIndex = dragDown ? currentIndex + 1 : currentIndex - 1;
 
       if (nextIndex >= 0 && nextIndex <= data.length - 1) {
-        const nextItemRef = this.itemRefs[nextIndex];
-        const activeItemRef = this.itemRefs[activeItem.index];
+        const nextItem = data[nextIndex];
+        const nextItemRef = this.itemRefs[nextItem.id];
+        const activeItemRef = this.itemRefs[activeItem.id];
 
         nextItemRef.measure((_x, _y, _width, nextHeight) => {
           activeItemRef.measure((_tx, _ty, _twidth, currentHeight) => {
@@ -119,10 +120,21 @@ export default class DraggableFlatList extends React.Component {
   reset = () => {
     this.setState(
       (state) => {
-        if (this.currentIndex && state.activeItem.index !== this.currentIndex) {
-          const swapped = [...state.data];
-          swapped[state.activeItem.index] = state.data[this.currentIndex];
-          swapped[this.currentIndex] = state.activeItem;
+        const {activeItem, data} = state;
+        if (
+          activeItem &&
+          this.currentIndex &&
+          activeItem.index !== this.currentIndex
+        ) {
+          const swapped = [...data];
+          swapped[activeItem.index] = Object.assign(
+            {},
+            data[this.currentIndex],
+            {index: activeItem.index},
+          );
+          swapped[this.currentIndex] = Object.assign({}, activeItem, {
+            index: this.currentIndex,
+          });
           return {
             activeItem: null,
             data: swapped,
@@ -134,8 +146,8 @@ export default class DraggableFlatList extends React.Component {
       },
       () => {
         this.scrollY.setValue(0);
-        this.activeHeight.setValue(0);
         this.activePositionY.setValue(0);
+        this.activeHeight.setValue(0);
         Object.values(this.animations).forEach((anim) => anim.setValue(0));
       },
     );
@@ -160,7 +172,7 @@ export default class DraggableFlatList extends React.Component {
       <TouchableWithoutFeedback
         onLayout={() => null}
         onLongPress={() => {
-          this.itemRefs[index].measure(
+          this.itemRefs[item.id].measure(
             (_x, _y, _width, height, _pageX, pageY) => {
               this.activeHeight.setValue(height);
               this.setState({activeItem: item}, () => {
