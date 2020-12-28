@@ -47,15 +47,17 @@ export default class DraggableFlatList extends React.Component {
 
   itemRefs = {};
   activePositionY = new Animated.Value(0);
+  scrollY = new Animated.Value(0);
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderEnd: () => {},
+    onPanResponderMove: (_, {dy}) => {
+      console.log(dy);
+      this.scrollY.setValue(dy);
+    },
     onPanResponderRelease: () => {
       this.reset();
-    },
-    onPanResponderTerminate: () => {
-      this.reset();
+      this.scrollY.setValue(0);
     },
   });
 
@@ -103,9 +105,14 @@ export default class DraggableFlatList extends React.Component {
             backgroundColor: item.color,
             height: item.height + 2,
             top: this.activePositionY,
+            transform: [
+              {
+                translateY: this.scrollY,
+              },
+            ],
           },
         ]}>
-        <Text style={[styles.text, {fontSize: FONT_SIZE + 2}]}>
+        <Text style={[styles.text, {fontSize: FONT_SIZE + 4}]}>
           {item.text}
         </Text>
       </Animated.View>
@@ -114,10 +121,9 @@ export default class DraggableFlatList extends React.Component {
 
   render() {
     const {activeItem} = this.state;
-    const panHandlers = activeItem ? this._panY.panHandlers : {};
 
     return (
-      <Animated.View {...panHandlers} style={styles.container}>
+      <Animated.View {...this._panY.panHandlers} style={styles.container}>
         <Animated.FlatList
           scrollEnabled={!activeItem}
           data={data}
