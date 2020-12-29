@@ -85,7 +85,6 @@ export default class DraggableFlatList extends React.Component {
   animating = false;
   currentIndex = null;
   activeItemDim = null;
-  dragOffset = 0;
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => {
@@ -101,7 +100,8 @@ export default class DraggableFlatList extends React.Component {
 
       const {activeIndex, data} = this.state;
 
-      const currentIndex = this.currentIndex || activeIndex;
+      const currentIndex =
+        this.currentIndex !== null ? this.currentIndex : activeIndex;
       const nextIndex = vy > 0 ? currentIndex + 1 : currentIndex - 1;
 
       const activeItem = data[activeIndex];
@@ -115,28 +115,28 @@ export default class DraggableFlatList extends React.Component {
           const {height, pageY} = this.activeItemDim;
 
           let shouldMoveNextItem = false;
-          console.log(dy - this.dragOffset, nextHeight, height);
           if (vy < 0) {
-            shouldMoveNextItem = pageY + dy <= nextPageY;
+            shouldMoveNextItem = pageY + dy <= nextPageY + EPSILON;
           } else if (vy > 0) {
             shouldMoveNextItem =
               pageY + dy >= nextPageY + nextHeight - height - EPSILON;
           }
           if (shouldMoveNextItem && currentIndex !== nextIndex) {
+            this.currentIndex = nextIndex;
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
               duration: 200,
               useNativeDriver: false,
             }).start(() => {
-              this.dragOffset = dy;
-              this.currentIndex = nextIndex;
               nextAnim.flattenOffset();
             });
           }
         });
       }
     },
-    onPanResponderTerminationRequest: () => false,
+    onPanResponderRelease: () => {
+      this.dragging = false;
+    },
     onPanResponderTerminate: () => {
       this.reset();
     },
@@ -148,6 +148,7 @@ export default class DraggableFlatList extends React.Component {
         (state) => {
           const {activeIndex, data} = state;
           const activeItem = data[activeIndex];
+          console.log(this.currentIndex);
           if (
             activeItem &&
             typeof this.currentIndex === 'number' &&
@@ -165,8 +166,8 @@ export default class DraggableFlatList extends React.Component {
         },
         () => {
           this.animating = false;
+          this.dragging = false;
           this.currentIndex = null;
-          this.dragOffset = 0;
           this.scrollY.setValue(0);
           this.activePositionY.setValue(0);
           this.activeHeight.setValue(0);
@@ -196,6 +197,7 @@ export default class DraggableFlatList extends React.Component {
       <TouchableWithoutFeedback
         onLayout={() => null}
         onLongPress={() => {
+          this.dragging = true;
           this.itemRefs[item.id].measure(
             (_x, _y, _width, height, _pageX, pageY) => {
               this.activeHeight.setValue(height);
