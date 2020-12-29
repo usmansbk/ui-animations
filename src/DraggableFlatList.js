@@ -84,6 +84,7 @@ export default class DraggableFlatList extends React.Component {
   animating = false;
   currentIndex = null;
   activeItemDim = null;
+  dragOffset = 0;
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => {
@@ -109,22 +110,23 @@ export default class DraggableFlatList extends React.Component {
         const nextItemRef = this.itemRefs[nextItem.id];
 
         nextItemRef.measure((_x, _y, _w, nextHeight, _px, nextPageY) => {
-          const nextAnim = this.animations[nextIndex];
+          const nextAnim = this.animations[nextItem.id];
           const {height, pageY} = this.activeItemDim;
 
           let shouldMoveNextItem = false;
-          if (dy < 0) {
-            shouldMoveNextItem = pageY - Math.abs(dy) <= nextPageY;
-          } else if (dy > 0) {
-            shouldMoveNextItem =
-              pageY + Math.abs(dy) >= nextPageY + nextHeight - height;
+          if (vy < 0) {
+            shouldMoveNextItem = pageY + dy <= nextPageY;
+          } else if (vy > 0) {
+            shouldMoveNextItem = pageY + dy >= nextPageY + nextHeight - height;
           }
-          if (shouldMoveNextItem) {
+          if (shouldMoveNextItem && currentIndex !== nextIndex) {
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
               duration: 200,
               useNativeDriver: false,
             }).start(() => {
+              console.log(activeIndex, currentIndex, nextIndex);
+              this.dragOffset = dy;
               this.currentIndex = nextIndex;
               nextAnim.flattenOffset();
             });
