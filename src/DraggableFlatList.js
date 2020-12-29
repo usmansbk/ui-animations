@@ -125,7 +125,6 @@ export default class DraggableFlatList extends React.Component {
               duration: 200,
               useNativeDriver: false,
             }).start(() => {
-              console.log(activeIndex, currentIndex, nextIndex);
               this.dragOffset = dy;
               this.currentIndex = nextIndex;
               nextAnim.flattenOffset();
