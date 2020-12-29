@@ -83,7 +83,7 @@ export default class DraggableFlatList extends React.Component {
 
   animating = false;
   currentIndex = null;
-  dragY = 0;
+  activeItemDim = null;
 
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => {
@@ -92,7 +92,7 @@ export default class DraggableFlatList extends React.Component {
       }
       return false;
     },
-    onPanResponderMove: (_, {dy}) => {
+    onPanResponderMove: (_, {dy, vy}) => {
       if (this.state.activeIndex >= 0) {
         this.scrollY.setValue(dy);
       }
@@ -100,84 +100,75 @@ export default class DraggableFlatList extends React.Component {
       const {activeIndex, data} = this.state;
 
       const currentIndex = this.currentIndex || activeIndex;
-      const absDY = Math.abs(dy);
-      const dragY = this.dragY;
-      const dragDown = absDY - dragY > 0;
-
-      let nextIndex;
-
-      const delta = absDY - dragY;
-      if (delta > 0 && currentIndex < data.length) {
-        nextIndex = currentIndex + 1;
-      } else if (delta < 0 && currentIndex > 0) {
-        nextIndex = currentIndex - 1;
-      }
+      const nextIndex = vy > 0 ? currentIndex + 1 : currentIndex - 1;
 
       const activeItem = data[activeIndex];
 
       if (activeItem && nextIndex >= 0 && nextIndex <= data.length - 1) {
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
-        const activeItemRef = this.itemRefs[activeItem.id];
 
-        nextItemRef.measure((_x, _y, _width, nextHeight) => {
-          activeItemRef.measure((_tx, _ty, _twidth, currentHeight) => {
-            const nextAnim = this.animations[nextIndex];
+        nextItemRef.measure((_x, _y, _w, nextHeight, _px, nextPageY) => {
+          const nextAnim = this.animations[nextIndex];
+          const {height, pageY} = this.activeItemDim;
 
-            if (
-              Math.abs(absDY - dragY) >= nextHeight &&
-              this.currentIndex !== nextIndex
-            ) {
-              Animated.timing(nextAnim, {
-                toValue: dragDown ? -currentHeight : currentHeight,
-                duration: 200,
-                useNativeDriver: false,
-              }).start(() => {
-                this.currentIndex = nextIndex;
-                this.dragY = absDY;
-                nextAnim.flattenOffset();
-              });
-            }
-          });
+          let shouldMoveNextItem = false;
+          if (dy < 0) {
+            shouldMoveNextItem = pageY - Math.abs(dy) <= nextPageY;
+          } else if (dy > 0) {
+            shouldMoveNextItem =
+              pageY + Math.abs(dy) >= nextPageY + nextHeight - height;
+          }
+          if (shouldMoveNextItem) {
+            Animated.timing(nextAnim, {
+              toValue: nextIndex > currentIndex ? -height : height,
+              duration: 200,
+              useNativeDriver: false,
+            }).start(() => {
+              this.currentIndex = nextIndex;
+              nextAnim.flattenOffset();
+            });
+          }
         });
       }
     },
-    onPanResponderTerminationRequest: () => true,
+    onPanResponderTerminationRequest: () => false,
     onPanResponderTerminate: () => {
       this.reset();
     },
   });
 
   reset = () => {
-    this.setState(
-      (state) => {
-        const {activeIndex, data} = state;
-        const activeItem = data[activeIndex];
-        if (
-          activeItem &&
-          this.currentIndex &&
-          activeIndex !== this.currentIndex
-        ) {
-          const moved = immutableMove(data, activeIndex, this.currentIndex);
+    requestAnimationFrame(() => {
+      this.setState(
+        (state) => {
+          const {activeIndex, data} = state;
+          const activeItem = data[activeIndex];
+          if (
+            activeItem &&
+            this.currentIndex &&
+            activeIndex !== this.currentIndex
+          ) {
+            const moved = immutableMove(data, activeIndex, this.currentIndex);
+            return {
+              activeIndex: null,
+              data: moved,
+            };
+          }
           return {
             activeIndex: null,
-            data: moved,
           };
-        }
-        return {
-          activeIndex: null,
-        };
-      },
-      () => {
-        this.dragY = 0;
-        this.animating = false;
-        this.currentIndex = null;
-        this.scrollY.setValue(0);
-        this.activePositionY.setValue(0);
-        this.activeHeight.setValue(0);
-        Object.values(this.animations).forEach((anim) => anim.setValue(0));
-      },
-    );
+        },
+        () => {
+          this.animating = false;
+          this.currentIndex = null;
+          this.scrollY.setValue(0);
+          this.activePositionY.setValue(0);
+          this.activeHeight.setValue(0);
+          Object.values(this.animations).forEach((anim) => anim.setValue(0));
+        },
+      );
+    });
   };
 
   renderItem = ({item, index}) => {
@@ -203,6 +194,12 @@ export default class DraggableFlatList extends React.Component {
           this.itemRefs[item.id].measure(
             (_x, _y, _width, height, _pageX, pageY) => {
               this.activeHeight.setValue(height);
+
+              this.activeItemDim = {
+                pageY,
+                height,
+              };
+
               this.setState({activeIndex: index}, () => {
                 this.activePositionY.setValue(pageY);
               });
