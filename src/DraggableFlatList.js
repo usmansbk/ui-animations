@@ -26,6 +26,7 @@ const colors = [
   '#d35400',
 ];
 
+const EPSILON = 2;
 const MIN_ITEM_HEIGHT = 40;
 const MAX_ITEM_HEIGHT = 90;
 const DIFF_HEIGHT = MAX_ITEM_HEIGHT - MIN_ITEM_HEIGHT;
@@ -114,10 +115,12 @@ export default class DraggableFlatList extends React.Component {
           const {height, pageY} = this.activeItemDim;
 
           let shouldMoveNextItem = false;
+          console.log(dy - this.dragOffset, nextHeight, height);
           if (vy < 0) {
             shouldMoveNextItem = pageY + dy <= nextPageY;
           } else if (vy > 0) {
-            shouldMoveNextItem = pageY + dy >= nextPageY + nextHeight - height;
+            shouldMoveNextItem =
+              pageY + dy >= nextPageY + nextHeight - height - EPSILON;
           }
           if (shouldMoveNextItem && currentIndex !== nextIndex) {
             Animated.timing(nextAnim, {
