@@ -134,9 +134,6 @@ export default class DraggableFlatList extends React.Component {
         });
       }
     },
-    onPanResponderRelease: () => {
-      this.dragging = false;
-    },
     onPanResponderTerminate: () => {
       this.reset();
     },
@@ -148,7 +145,6 @@ export default class DraggableFlatList extends React.Component {
         (state) => {
           const {activeIndex, data} = state;
           const activeItem = data[activeIndex];
-          console.log(this.currentIndex);
           if (
             activeItem &&
             typeof this.currentIndex === 'number' &&
@@ -166,7 +162,6 @@ export default class DraggableFlatList extends React.Component {
         },
         () => {
           this.animating = false;
-          this.dragging = false;
           this.currentIndex = null;
           this.scrollY.setValue(0);
           this.activePositionY.setValue(0);
@@ -197,7 +192,6 @@ export default class DraggableFlatList extends React.Component {
       <TouchableWithoutFeedback
         onLayout={() => null}
         onLongPress={() => {
-          this.dragging = true;
           this.itemRefs[item.id].measure(
             (_x, _y, _width, height, _pageX, pageY) => {
               this.activeHeight.setValue(height);
