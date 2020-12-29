@@ -145,7 +145,6 @@ export default class DraggableFlatList extends React.Component {
         (state) => {
           const {activeIndex, data} = state;
           const activeItem = data[activeIndex];
-          console.log(this.currentIndex);
           if (
             activeItem &&
             typeof this.currentIndex === 'number' &&
