@@ -112,15 +112,6 @@ export default class DraggableFlatList extends React.Component {
 
         nextItemRef.measure((_x, _y, _w, nextHeight, _px, nextPageY) => {
           const {height, pageY} = this.activeItemDim;
-          console.log(
-            'move3',
-            nextIndex,
-            currentIndex,
-            height,
-            pageY,
-            nextPageY,
-            nextHeight,
-          );
           if (
             shouldMoveNextItem({
               pageY,
@@ -132,7 +123,6 @@ export default class DraggableFlatList extends React.Component {
             }) &&
             currentIndex !== nextIndex
           ) {
-            console.log('move', nextIndex, currentIndex);
             this.offset = vy > 0 ? this.offset + 1 : this.offset - 1;
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
