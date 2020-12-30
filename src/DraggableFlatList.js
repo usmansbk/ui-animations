@@ -135,7 +135,7 @@ export default class DraggableFlatList extends React.Component {
         });
       }
     },
-    onPanResponderTerminationRequest: () => false,
+    onPanResponderTerminationRequest: () => true,
     onPanResponderTerminate: this.reset,
   });
 
