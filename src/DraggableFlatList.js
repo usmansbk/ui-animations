@@ -106,7 +106,11 @@ export default class DraggableFlatList extends React.Component {
       const currentIndex = activeIndex + this.offset;
       const nextIndex = isDragDown ? currentIndex + 1 : currentIndex - 1;
 
-      if (nextIndex >= 0 && nextIndex <= data.length - 1) {
+      if (
+        activeIndex !== null &&
+        nextIndex >= 0 &&
+        nextIndex <= data.length - 1
+      ) {
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
         const nextAnim = this.animations[nextItem.id];
@@ -265,7 +269,7 @@ export default class DraggableFlatList extends React.Component {
     return (
       <View style={styles.container} {...this._panY.panHandlers}>
         <FlatList
-          scrollEnabled={activeIndex !== null}
+          scrollEnabled={activeIndex === null}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={this.renderItem}
