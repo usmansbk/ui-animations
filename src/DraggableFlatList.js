@@ -92,8 +92,6 @@ export default class DraggableFlatList extends React.Component {
   activeHeight = new Animated.Value(0);
   scrollY = new Animated.Value(0);
 
-  dragging = false;
-  currentIndex = null;
   activeItemDim = null;
   offset = 0;
 
@@ -110,9 +108,7 @@ export default class DraggableFlatList extends React.Component {
         this.scrollY.setValue(dy);
       }
 
-      const offset = this.offset + 1;
-      const currentIndex =
-        this.currentIndex === null ? activeIndex : this.currentIndex;
+      const currentIndex = activeIndex + this.offset;
       const nextIndex = vy > 0 ? currentIndex + 1 : currentIndex - 1;
 
       const activeItem = data[activeIndex];
@@ -120,11 +116,10 @@ export default class DraggableFlatList extends React.Component {
       if (activeItem && nextIndex >= 0 && nextIndex <= data.length - 1) {
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
+        const nextAnim = this.animations[nextItem.id];
 
         nextItemRef.measure((_x, _y, _w, nextHeight, _px, nextPageY) => {
-          const nextAnim = this.animations[nextItem.id];
           const {height, pageY} = this.activeItemDim;
-
           if (
             shouldMoveNextItem({
               pageY,
@@ -134,10 +129,9 @@ export default class DraggableFlatList extends React.Component {
               dy,
               vy,
             }) &&
-            this.offset !== offset
+            currentIndex !== nextIndex
           ) {
-            this.currentIndex = nextIndex;
-            this.offset += 1;
+            this.offset = vy > 0 ? this.offset + 1 : this.offset - 1;
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
               duration: 200,
@@ -158,12 +152,12 @@ export default class DraggableFlatList extends React.Component {
         (state) => {
           const {activeIndex, data} = state;
           const activeItem = data[activeIndex];
-          if (
-            activeItem &&
-            typeof this.currentIndex === 'number' &&
-            activeIndex !== this.currentIndex
-          ) {
-            const moved = immutableMove(data, activeIndex, this.currentIndex);
+          if (activeItem) {
+            const moved = immutableMove(
+              data,
+              activeIndex,
+              activeIndex + this.offset,
+            );
             return {
               activeIndex: null,
               data: moved,
@@ -175,7 +169,6 @@ export default class DraggableFlatList extends React.Component {
         },
         () => {
           this.offset = 0;
-          this.currentIndex = null;
           this.scrollY.setValue(0);
           this.activePositionY.setValue(0);
           this.activeHeight.setValue(0);
