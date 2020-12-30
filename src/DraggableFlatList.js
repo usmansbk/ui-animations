@@ -89,6 +89,7 @@ export default class DraggableFlatList extends React.Component {
   activeHeight = new Animated.Value(0);
   scrollY = new Animated.Value(0);
 
+  dragging = false;
   currentIndex = null;
   activeItemDim = null;
 
@@ -130,6 +131,7 @@ export default class DraggableFlatList extends React.Component {
             }) &&
             this.currentIndex !== nextIndex
           ) {
+            this.dragging = true;
             this.currentIndex = nextIndex;
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
@@ -169,6 +171,7 @@ export default class DraggableFlatList extends React.Component {
           };
         },
         () => {
+          this.dragging = false;
           this.currentIndex = null;
           this.scrollY.setValue(0);
           this.activePositionY.setValue(0);
