@@ -73,7 +73,10 @@ function shouldMoveNextItem({dy, vy, height, pageY, nextPageY, nextHeight}) {
   if (vy < 0) {
     return pageY + dy <= nextPageY + EPSILON;
   }
-  return pageY + dy >= nextPageY + nextHeight - height - EPSILON;
+  if (vy > 0) {
+    return pageY + dy >= nextPageY + nextHeight - height - EPSILON;
+  }
+  return false;
 }
 
 export default class DraggableFlatList extends React.Component {
