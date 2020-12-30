@@ -87,21 +87,15 @@ export default class DraggableFlatList extends React.Component {
 
   itemRefs = {};
   animations = {};
+  offset = 0;
+  activeItemDim = null;
 
   activePositionY = new Animated.Value(0);
   activeHeight = new Animated.Value(0);
   scrollY = new Animated.Value(0);
 
-  activeItemDim = null;
-  offset = 0;
-
   _panY = PanResponder.create({
-    onMoveShouldSetPanResponder: () => {
-      if (this.state.activeIndex >= 0) {
-        return true;
-      }
-      return false;
-    },
+    onMoveShouldSetPanResponder: () => this.state.activeIndex >= 0,
     onPanResponderMove: (_, {dy, vy}) => {
       const {activeIndex, data} = this.state;
       if (activeIndex >= 0) {
@@ -111,15 +105,22 @@ export default class DraggableFlatList extends React.Component {
       const currentIndex = activeIndex + this.offset;
       const nextIndex = vy > 0 ? currentIndex + 1 : currentIndex - 1;
 
-      const activeItem = data[activeIndex];
-
-      if (activeItem && nextIndex >= 0 && nextIndex <= data.length - 1) {
+      if (activeIndex >= 0 && nextIndex >= 0 && nextIndex <= data.length - 1) {
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
         const nextAnim = this.animations[nextItem.id];
 
         nextItemRef.measure((_x, _y, _w, nextHeight, _px, nextPageY) => {
           const {height, pageY} = this.activeItemDim;
+          console.log(
+            'move3',
+            nextIndex,
+            currentIndex,
+            height,
+            pageY,
+            nextPageY,
+            nextHeight,
+          );
           if (
             shouldMoveNextItem({
               pageY,
@@ -131,6 +132,7 @@ export default class DraggableFlatList extends React.Component {
             }) &&
             currentIndex !== nextIndex
           ) {
+            console.log('move', nextIndex, currentIndex);
             this.offset = vy > 0 ? this.offset + 1 : this.offset - 1;
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
@@ -143,6 +145,7 @@ export default class DraggableFlatList extends React.Component {
         });
       }
     },
+    onPanResponderTerminationRequest: () => false,
     onPanResponderTerminate: this.reset,
   });
 
