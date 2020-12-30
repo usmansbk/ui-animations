@@ -127,11 +127,10 @@ export default class DraggableFlatList extends React.Component {
               nextPageY,
               dy,
               vy,
-            })
+            }) &&
+            this.currentIndex !== nextIndex
           ) {
             this.currentIndex = nextIndex;
-            this.previousIndex = currentIndex;
-
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
               duration: 200,
