@@ -69,6 +69,13 @@ function immutableMove(arr, from, to) {
   }, []);
 }
 
+function shouldMoveNextItem({dy, vy, height, pageY, nextPageY, nextHeight}) {
+  if (vy < 0) {
+    return pageY + dy <= nextPageY + EPSILON;
+  }
+  return pageY + dy >= nextPageY + nextHeight - height - EPSILON;
+}
+
 export default class DraggableFlatList extends React.Component {
   state = {
     data: listData,
@@ -93,11 +100,10 @@ export default class DraggableFlatList extends React.Component {
       return false;
     },
     onPanResponderMove: (_, {dy, vy}) => {
-      if (this.state.activeIndex >= 0) {
+      const {activeIndex, data} = this.state;
+      if (activeIndex >= 0) {
         this.scrollY.setValue(dy);
       }
-
-      const {activeIndex, data} = this.state;
 
       const currentIndex =
         this.currentIndex !== null ? this.currentIndex : activeIndex;
@@ -113,15 +119,19 @@ export default class DraggableFlatList extends React.Component {
           const nextAnim = this.animations[nextItem.id];
           const {height, pageY} = this.activeItemDim;
 
-          let shouldMoveNextItem = false;
-          if (vy < 0) {
-            shouldMoveNextItem = pageY + dy <= nextPageY + EPSILON;
-          } else if (vy > 0) {
-            shouldMoveNextItem =
-              pageY + dy >= nextPageY + nextHeight - height - EPSILON;
-          }
-          if (shouldMoveNextItem && currentIndex !== nextIndex) {
+          if (
+            shouldMoveNextItem({
+              pageY,
+              height,
+              nextHeight,
+              nextPageY,
+              dy,
+              vy,
+            })
+          ) {
             this.currentIndex = nextIndex;
+            this.previousIndex = currentIndex;
+
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
               duration: 200,
