@@ -134,14 +134,16 @@ export default class DraggableFlatList extends React.Component {
               toValue: isDragDown ? -height : height,
               duration: 200,
               useNativeDriver: false,
-            }).start(() => {
-              nextAnim.flattenOffset();
+            }).start(({finished}) => {
+              if (finished) {
+                nextAnim.flattenOffset();
+              }
             });
           }
         });
       }
     },
-    onPanResponderTerminationRequest: () => true,
+    onPanResponderTerminationRequest: () => false,
     onPanResponderTerminate: this.reset,
   });
 
