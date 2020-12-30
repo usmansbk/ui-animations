@@ -102,10 +102,11 @@ export default class DraggableFlatList extends React.Component {
         this.scrollY.setValue(dy);
       }
 
+      const isDragDown = vy > 0;
       const currentIndex = activeIndex + this.offset;
-      const nextIndex = vy > 0 ? currentIndex + 1 : currentIndex - 1;
+      const nextIndex = isDragDown ? currentIndex + 1 : currentIndex - 1;
 
-      if (activeIndex >= 0 && nextIndex >= 0 && nextIndex <= data.length - 1) {
+      if (nextIndex >= 0 && nextIndex <= data.length - 1) {
         const nextItem = data[nextIndex];
         const nextItemRef = this.itemRefs[nextItem.id];
         const nextAnim = this.animations[nextItem.id];
@@ -123,9 +124,14 @@ export default class DraggableFlatList extends React.Component {
             }) &&
             currentIndex !== nextIndex
           ) {
-            this.offset = vy > 0 ? ++this.offset : --this.offset;
+            if (isDragDown) {
+              this.offset += 1;
+            } else {
+              this.offset -= 1;
+            }
+
             Animated.timing(nextAnim, {
-              toValue: vy > 0 ? -height : height,
+              toValue: isDragDown ? -height : height,
               duration: 200,
               useNativeDriver: false,
             }).start(() => {
