@@ -89,6 +89,7 @@ export default class DraggableFlatList extends React.Component {
   animations = {};
   offset = 0;
   activeItemDim = null;
+  toIndex = null;
 
   activePositionY = new Animated.Value(0);
   activeHeight = new Animated.Value(0);
@@ -102,46 +103,39 @@ export default class DraggableFlatList extends React.Component {
         this.scrollY.setValue(dy);
       }
 
-      const isDragDown = vy > 0;
-      const currentIndex = activeIndex + this.offset;
-      const nextIndex = isDragDown ? currentIndex + 1 : currentIndex - 1;
+      const moveIndex = activeIndex + this.offset;
 
       if (
         activeIndex !== null &&
-        nextIndex >= 0 &&
-        nextIndex <= data.length - 1
+        moveIndex >= 0 &&
+        moveIndex <= data.length - 1
       ) {
-        const nextItem = data[nextIndex];
-        const nextItemRef = this.itemRefs[nextItem.id];
-        const nextAnim = this.animations[nextItem.id];
+        const moveItem = data[moveIndex];
+        const moveItemRef = this.itemRefs[moveItem.id];
+        const moveAnim = this.animations[moveItem.id];
 
-        nextItemRef.measure((_x, _y, _w, nextHeight, _px, nextPageY) => {
+        moveItemRef.measure((_x, _y, _w, moveHeight, _px, movePageY) => {
           const {height, pageY} = this.activeItemDim;
+          const isDragDown = vy > 0;
+
           if (
             shouldMoveNextItem({
               pageY,
               height,
-              nextHeight,
-              nextPageY,
+              nextHeight: moveHeight,
+              nextPageY: movePageY,
               dy,
               vy,
-            }) &&
-            currentIndex !== nextIndex
+            })
           ) {
-            if (isDragDown) {
-              this.offset += 1;
-            } else {
-              this.offset -= 1;
-            }
-
-            Animated.timing(nextAnim, {
+            this.offset = isDragDown ? ++this.offset : --this.offset;
+            this.toIndex = moveIndex;
+            Animated.timing(moveAnim, {
               toValue: isDragDown ? -height : height,
               duration: 200,
               useNativeDriver: false,
-            }).start(({finished}) => {
-              if (finished) {
-                nextAnim.flattenOffset();
-              }
+            }).start(() => {
+              moveAnim.flattenOffset();
             });
           }
         });
@@ -157,12 +151,8 @@ export default class DraggableFlatList extends React.Component {
         (state) => {
           const {activeIndex, data} = state;
           const activeItem = data[activeIndex];
-          if (activeItem) {
-            const moved = immutableMove(
-              data,
-              activeIndex,
-              activeIndex + this.offset,
-            );
+          if (activeItem && this.toIndex !== null) {
+            const moved = immutableMove(data, activeIndex, this.toIndex);
             return {
               activeIndex: null,
               data: moved,
@@ -173,6 +163,7 @@ export default class DraggableFlatList extends React.Component {
           };
         },
         () => {
+          this.toIndex = null;
           this.offset = 0;
           this.scrollY.setValue(0);
           this.activePositionY.setValue(0);
