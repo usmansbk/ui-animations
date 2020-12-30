@@ -123,7 +123,7 @@ export default class DraggableFlatList extends React.Component {
             }) &&
             currentIndex !== nextIndex
           ) {
-            this.offset = vy > 0 ? this.offset + 1 : this.offset - 1;
+            this.offset = vy > 0 ? ++this.offset : --this.offset;
             Animated.timing(nextAnim, {
               toValue: nextIndex > currentIndex ? -height : height,
               duration: 200,
