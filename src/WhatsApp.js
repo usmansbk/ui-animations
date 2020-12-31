@@ -15,7 +15,9 @@ import Animated from 'react-native-reanimated';
 const {width} = Dimensions.get('window');
 const HEADER_HEIGHT = 56;
 const BUTTON_SIZE = 40;
+const TAB_BUTTON_WIDTH = (width - width * 0.1) / 3;
 const TAB_HEIGHT = 48;
+const INDICATOR_HEIGHT = 3;
 const colors = {
   dark: '#00342b',
   primary: '#075e54',
@@ -83,25 +85,26 @@ function TabBar({state, navigation, position}) {
 
           if (route.name === 'CAMERA') {
             return (
-              <Animated.View key={route.name} style={{opacity}}>
+              <View key={route.name}>
                 <TabIconButton
                   isFocused={isFocused}
                   onPress={onPress}
-                  opacity
+                  opacity={opacity}
                 />
-                <Animated.View style={styles.indicator} />
-              </Animated.View>
+                <Animated.View style={[styles.indicator]} />
+              </View>
             );
           }
           return (
-            <Animated.View key={route.name} style={{opacity}}>
+            <View key={route.name}>
               <TabButton
                 label={label}
                 onPress={onPress}
                 isFocused={isFocused}
+                opacity={opacity}
               />
-              <Animated.View style={styles.indicator} />
-            </Animated.View>
+              <Animated.View style={[styles.indicator]} />
+            </View>
           );
         })}
       </View>
@@ -109,27 +112,27 @@ function TabBar({state, navigation, position}) {
   );
 }
 
-function TabIconButton({isFocused, onPress}) {
+function TabIconButton({isFocused, onPress, opacity}) {
   return (
     <TouchableNativeFeedback
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={isFocused ? {selected: true} : {}}>
-      <View style={styles.iconTabButton}>
+      <Animated.View style={[styles.iconTabButton, {opacity}]}>
         <Icon name="camera-alt" size={24} color="white" />
-      </View>
+      </Animated.View>
     </TouchableNativeFeedback>
   );
 }
 
-function TabButton({label, onPress, isFocused}) {
+function TabButton({label, onPress, isFocused, opacity}) {
   return (
     <TouchableNativeFeedback
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={isFocused ? {selected: true} : {}}>
       <View style={styles.tabButton}>
-        <Text style={[styles.label]}>{label}</Text>
+        <Animated.Text style={[styles.label, {opacity}]}>{label}</Animated.Text>
       </View>
     </TouchableNativeFeedback>
   );
@@ -181,17 +184,17 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     elevation: 10,
-    height: HEADER_HEIGHT + TAB_HEIGHT,
+    height: HEADER_HEIGHT + TAB_HEIGHT + INDICATOR_HEIGHT,
+    backgroundColor: colors.primary,
   },
   tabBar: {
     height: TAB_HEIGHT,
     width: '100%',
     flexDirection: 'row',
-    backgroundColor: colors.primary,
   },
   tabButton: {
     height: '100%',
-    width: (width - width * 0.1) / 3,
+    width: TAB_BUTTON_WIDTH,
     paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   indicator: {
-    height: 3,
+    height: INDICATOR_HEIGHT,
     backgroundColor: 'white',
   },
 });
