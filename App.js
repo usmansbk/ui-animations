@@ -1,6 +1,12 @@
+import 'react-native-gesture-handler';
 import React from 'react';
-import DraggableList from './src/DraggableFlatList';
+import {NavigationContainer} from '@react-navigation/native';
+import WhatsApp from './src/WhatsApp';
 
 export default function App() {
-  return <DraggableList />;
+  return (
+    <NavigationContainer>
+      <WhatsApp />
+    </NavigationContainer>
+  );
 }
