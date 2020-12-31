@@ -74,20 +74,21 @@ function TabBar({state, navigation}) {
           };
           if (route.name === 'CAMERA') {
             return (
-              <TabIconButton
-                key={route.name}
-                isFocused={isFocused}
-                onPress={onPress}
-              />
+              <View key={route.name}>
+                <TabIconButton isFocused={isFocused} onPress={onPress} />
+                <View style={styles.indicator} />
+              </View>
             );
           }
           return (
-            <TabButton
-              key={route.name}
-              label={label}
-              onPress={onPress}
-              isFocused={isFocused}
-            />
+            <View key={route.name}>
+              <TabButton
+                label={label}
+                onPress={onPress}
+                isFocused={isFocused}
+              />
+              <View style={styles.indicator} />
+            </View>
           );
         })}
       </View>
@@ -195,5 +196,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  indicator: {
+    height: 3,
+    backgroundColor: 'white',
   },
 });
