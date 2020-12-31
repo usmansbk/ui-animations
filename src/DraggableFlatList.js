@@ -144,7 +144,7 @@ export default class DraggableFlatList extends React.Component {
             if (toValue) {
               Animated.timing(moveAnim, {
                 toValue,
-                duration: 200,
+                duration: 180,
                 useNativeDriver: false,
               }).start(() => {
                 moveAnim.flattenOffset();
