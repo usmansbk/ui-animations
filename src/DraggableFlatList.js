@@ -187,10 +187,9 @@ export default class DraggableFlatList extends React.Component {
   };
 
   renderItem = ({item, index}) => {
-    const {activeIndex, data} = this.state;
-    const activeItem = data[activeIndex];
+    const {activeIndex} = this.state;
     const activeStyle = {
-      opacity: activeItem?.id === item.id ? 0 : 1,
+      opacity: activeIndex === index ? 0 : 1,
     };
     const animY = new Animated.Value(0);
     this.animations[item.id] = animY;
