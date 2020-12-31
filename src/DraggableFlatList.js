@@ -107,7 +107,7 @@ export default class DraggableFlatList extends React.Component {
       if (vy > 0) {
         moveIndex = activeIndex + this.offset + 1;
       } else if (vy < 0) {
-        moveIndex = activeIndex + this.offset;
+        moveIndex = activeIndex + this.offset - 1;
       }
 
       if (
