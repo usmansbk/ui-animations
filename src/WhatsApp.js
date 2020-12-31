@@ -6,10 +6,11 @@ import {
   View,
   TouchableHighlight,
   Dimensions,
+  TouchableNativeFeedback,
 } from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {TouchableNativeFeedback} from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 const {width} = Dimensions.get('window');
 const HEADER_HEIGHT = 56;
@@ -52,7 +53,8 @@ function AppBar() {
   );
 }
 
-function TabBar({state, navigation}) {
+function TabBar({state, navigation, position}) {
+  const inputRange = state.routes.map((_, i) => i);
   return (
     <View style={styles.tabContainer}>
       <AppBar />
@@ -72,23 +74,34 @@ function TabBar({state, navigation}) {
               navigation.navigate(route.name);
             }
           };
+
+          const opacity = Animated.interpolate(position, {
+            inputRange,
+            outputRange: inputRange.map((i) => (i === index ? 1 : 0.5)),
+            extrapolate: 'clamp',
+          });
+
           if (route.name === 'CAMERA') {
             return (
-              <View key={route.name}>
-                <TabIconButton isFocused={isFocused} onPress={onPress} />
+              <Animated.View key={route.name} style={{opacity}}>
+                <TabIconButton
+                  isFocused={isFocused}
+                  onPress={onPress}
+                  opacity
+                />
                 <View style={styles.indicator} />
-              </View>
+              </Animated.View>
             );
           }
           return (
-            <View key={route.name}>
+            <Animated.View key={route.name} style={{opacity}}>
               <TabButton
                 label={label}
                 onPress={onPress}
                 isFocused={isFocused}
               />
               <View style={styles.indicator} />
-            </View>
+            </Animated.View>
           );
         })}
       </View>
@@ -97,29 +110,23 @@ function TabBar({state, navigation}) {
 }
 
 function TabIconButton({isFocused, onPress}) {
-  const activeOpacity = {
-    opacity: isFocused ? 1 : 0.5,
-  };
   return (
     <TouchableNativeFeedback onPress={onPress}>
       <View style={styles.iconTabButton}>
-        <Icon name="camera-alt" size={24} color="white" style={activeOpacity} />
+        <Icon name="camera-alt" size={24} color="white" />
       </View>
     </TouchableNativeFeedback>
   );
 }
 
 function TabButton({label, onPress, isFocused}) {
-  const activeOpacity = {
-    opacity: isFocused ? 1 : 0.5,
-  };
   return (
     <TouchableNativeFeedback
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={isFocused ? {selected: true} : {}}>
       <View style={styles.tabButton}>
-        <Text style={[styles.label, activeOpacity]}>{label}</Text>
+        <Text style={[styles.label]}>{label}</Text>
       </View>
     </TouchableNativeFeedback>
   );
