@@ -10,6 +10,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const HEADER_HEIGHT = 60;
+const BUTTON_SIZE = 40;
 const colors = {
   dark: '#00342b',
   primary: '#075e54',
@@ -32,9 +33,9 @@ const IconButton = ({name}) => (
   </TouchableHighlight>
 );
 
-export default function () {
+function AppBar() {
   return (
-    <>
+    <View>
       <StatusBar backgroundColor={colors.dark} barStyle="light-content" />
       <View style={styles.header}>
         <Text style={styles.title}>WhatsApp</Text>
@@ -43,6 +44,14 @@ export default function () {
           <IconButton name="more-vert" />
         </View>
       </View>
+    </View>
+  );
+}
+
+export default function () {
+  return (
+    <>
+      <AppBar />
       <Tab.Navigator initialRouteName="CHATS" backBehavior="initialRoute">
         <Tab.Screen name="CHATS" component={Component} />
         <Tab.Screen name="STATUS" component={Component} />
@@ -75,9 +84,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   button: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
+    borderRadius: BUTTON_SIZE / 2,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 2,
