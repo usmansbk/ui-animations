@@ -89,7 +89,7 @@ function TabBar({state, navigation, position}) {
                   onPress={onPress}
                   opacity
                 />
-                <View style={styles.indicator} />
+                <Animated.View style={styles.indicator} />
               </Animated.View>
             );
           }
@@ -100,7 +100,7 @@ function TabBar({state, navigation, position}) {
                 onPress={onPress}
                 isFocused={isFocused}
               />
-              <View style={styles.indicator} />
+              <Animated.View style={styles.indicator} />
             </Animated.View>
           );
         })}
@@ -111,7 +111,10 @@ function TabBar({state, navigation, position}) {
 
 function TabIconButton({isFocused, onPress}) {
   return (
-    <TouchableNativeFeedback onPress={onPress}>
+    <TouchableNativeFeedback
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={isFocused ? {selected: true} : {}}>
       <View style={styles.iconTabButton}>
         <Icon name="camera-alt" size={24} color="white" />
       </View>
