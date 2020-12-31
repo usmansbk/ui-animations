@@ -11,6 +11,7 @@ import {
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Animated from 'react-native-reanimated';
+import {RectButton} from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('window');
 const HEADER_HEIGHT = 56;
@@ -18,6 +19,7 @@ const BUTTON_SIZE = 40;
 const TAB_BUTTON_WIDTH = (width - width * 0.1) / 3;
 const TAB_HEIGHT = 48;
 const INDICATOR_HEIGHT = 3;
+const FAB_SIZE = 56;
 const colors = {
   dark: '#00342b',
   primary: '#075e54',
@@ -27,7 +29,25 @@ const colors = {
 
 const Tab = createMaterialTopTabNavigator();
 
-const Component = () => <View style={styles.container} />;
+const Camera = () => <View style={styles.container} />;
+
+const Chats = () => (
+  <View style={styles.container}>
+    <FAB name="chat" />
+  </View>
+);
+
+const Status = () => (
+  <View style={styles.container}>
+    <FAB name="photo-camera" />
+  </View>
+);
+
+const Calls = () => (
+  <View style={styles.container}>
+    <FAB name="add-call" />
+  </View>
+);
 
 const IconButton = ({name}) => (
   <TouchableHighlight
@@ -112,6 +132,16 @@ function TabBar({state, navigation, position}) {
   );
 }
 
+function FAB({name}) {
+  return (
+    <RectButton style={styles.fab}>
+      <View key={name}>
+        <Icon name={name} size={24} color="white" />
+      </View>
+    </RectButton>
+  );
+}
+
 function TabIconButton({isFocused, onPress, opacity}) {
   return (
     <TouchableNativeFeedback
@@ -144,10 +174,10 @@ export default function Home() {
       tabBar={(props) => <TabBar {...props} />}
       initialRouteName="CHATS"
       backBehavior="initialRoute">
-      <Tab.Screen name="CAMERA" component={Component} />
-      <Tab.Screen name="CHATS" component={Component} />
-      <Tab.Screen name="STATUS" component={Component} />
-      <Tab.Screen name="CALLS" component={Component} />
+      <Tab.Screen name="CAMERA" component={Camera} />
+      <Tab.Screen name="CHATS" component={Chats} />
+      <Tab.Screen name="STATUS" component={Status} />
+      <Tab.Screen name="CALLS" component={Calls} />
     </Tab.Navigator>
   );
 }
@@ -213,5 +243,18 @@ const styles = StyleSheet.create({
   indicator: {
     height: INDICATOR_HEIGHT,
     backgroundColor: 'white',
+  },
+  fab: {
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    borderRadius: FAB_SIZE / 2,
+    backgroundColor: colors.light,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    margin: 16,
+    elevation: 10,
   },
 });
