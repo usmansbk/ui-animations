@@ -195,13 +195,17 @@ export default class DraggableFlatList extends React.Component {
     const animY = new Animated.Value(0);
     this.animations[item.id] = animY;
 
-    const shiftStyle = {
-      transform: [
-        {
-          translateY: animY,
-        },
-      ],
-    };
+    const shiftStyle =
+      activeIndex === index
+        ? {}
+        : {
+            transform: [
+              {
+                translateY: animY,
+              },
+            ],
+          };
+
     return (
       <TouchableWithoutFeedback
         onLayout={() => null}
