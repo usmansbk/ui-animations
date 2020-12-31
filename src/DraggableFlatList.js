@@ -73,10 +73,7 @@ function shouldMoveNextItem({dy, vy, height, pageY, nextPageY, nextHeight}) {
   if (vy < 0) {
     return pageY + dy <= nextPageY + EPSILON;
   }
-  if (vy > 0) {
-    return pageY + dy >= nextPageY + nextHeight - height - EPSILON;
-  }
-  return false;
+  return pageY + dy >= nextPageY + nextHeight - height - EPSILON;
 }
 
 export default class DraggableFlatList extends React.Component {
@@ -98,6 +95,10 @@ export default class DraggableFlatList extends React.Component {
   _panY = PanResponder.create({
     onMoveShouldSetPanResponder: () => this.state.activeIndex >= 0,
     onPanResponderMove: (_, {dy, vy}) => {
+      if (!vy) {
+        return;
+      }
+
       const {activeIndex, data} = this.state;
       if (activeIndex >= 0) {
         this.scrollY.setValue(dy);
@@ -106,12 +107,11 @@ export default class DraggableFlatList extends React.Component {
       let moveIndex;
       if (vy > 0) {
         moveIndex = activeIndex + this.offset + 1;
-      } else if (vy < 0) {
+      } else {
         moveIndex = activeIndex + this.offset - 1;
       }
 
       if (
-        vy &&
         activeIndex !== null &&
         moveIndex >= 0 &&
         moveIndex <= data.length - 1
@@ -138,7 +138,7 @@ export default class DraggableFlatList extends React.Component {
             if (vy > 0) {
               this.offset += 1;
               toValue = -height;
-            } else if (vy < 0) {
+            } else {
               this.offset -= 1;
               toValue = height;
             }
