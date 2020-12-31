@@ -111,6 +111,7 @@ export default class DraggableFlatList extends React.Component {
       }
 
       if (
+        vy &&
         activeIndex !== null &&
         moveIndex >= 0 &&
         moveIndex <= data.length - 1
