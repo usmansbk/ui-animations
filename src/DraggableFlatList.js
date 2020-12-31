@@ -191,8 +191,8 @@ export default class DraggableFlatList extends React.Component {
     const activeStyle = {
       opacity: activeIndex === index ? 0 : 1,
     };
-    const animY = new Animated.Value(0);
-    this.animations[item.id] = animY;
+    const translateY = new Animated.Value(0);
+    this.animations[item.id] = translateY;
 
     const shiftStyle =
       activeIndex === index
@@ -200,7 +200,7 @@ export default class DraggableFlatList extends React.Component {
         : {
             transform: [
               {
-                translateY: animY,
+                translateY,
               },
             ],
           };
