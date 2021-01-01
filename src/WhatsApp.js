@@ -60,58 +60,60 @@ function AppBar() {
 function TabBar({state, navigation, position}) {
   const inputRange = state.routes.map((_, i) => i);
   return (
-    <View style={styles.tabContainer}>
-      <AppBar />
-      <View style={styles.tabBar}>
-        {state.routes.map((route, index) => {
-          const label = route.name;
+    <>
+      <View style={styles.tabContainer}>
+        <AppBar />
+        <View style={styles.tabBar}>
+          {state.routes.map((route, index) => {
+            const label = route.name;
 
-          const isFocused = state.index === index;
+            const isFocused = state.index === index;
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
+            const onPress = () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            };
+
+            const opacity = Animated.interpolate(position, {
+              inputRange,
+              outputRange: inputRange.map((i) => (i === index ? 1 : 0.5)),
+              extrapolate: 'clamp',
             });
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
+
+            if (route.name === 'CAMERA') {
+              return (
+                <View key={route.name}>
+                  <TabIconButton
+                    isFocused={isFocused}
+                    onPress={onPress}
+                    opacity={opacity}
+                  />
+                  <Animated.View style={[styles.indicator]} />
+                </View>
+              );
             }
-          };
-
-          const opacity = Animated.interpolate(position, {
-            inputRange,
-            outputRange: inputRange.map((i) => (i === index ? 1 : 0.5)),
-            extrapolate: 'clamp',
-          });
-
-          if (route.name === 'CAMERA') {
             return (
               <View key={route.name}>
-                <TabIconButton
-                  isFocused={isFocused}
+                <TabButton
+                  label={label}
                   onPress={onPress}
+                  isFocused={isFocused}
                   opacity={opacity}
                 />
                 <Animated.View style={[styles.indicator]} />
               </View>
             );
-          }
-          return (
-            <View key={route.name}>
-              <TabButton
-                label={label}
-                onPress={onPress}
-                isFocused={isFocused}
-                opacity={opacity}
-              />
-              <Animated.View style={[styles.indicator]} />
-            </View>
-          );
-        })}
+          })}
+        </View>
       </View>
       <FAB index={state.index} />
-    </View>
+    </>
   );
 }
 
@@ -163,15 +165,17 @@ function TabButton({label, onPress, isFocused, opacity}) {
 
 export default function Home() {
   return (
-    <Tab.Navigator
-      tabBar={(props) => <TabBar {...props} />}
-      initialRouteName="CHATS"
-      backBehavior="initialRoute">
-      <Tab.Screen name="CAMERA" component={Screen} />
-      <Tab.Screen name="CHATS" component={Screen} />
-      <Tab.Screen name="STATUS" component={Screen} />
-      <Tab.Screen name="CALLS" component={Screen} />
-    </Tab.Navigator>
+    <View style={styles.container}>
+      <Tab.Navigator
+        tabBar={(props) => <TabBar {...props} />}
+        initialRouteName="CHATS"
+        backBehavior="initialRoute">
+        <Tab.Screen name="CAMERA" component={Screen} />
+        <Tab.Screen name="CHATS" component={Screen} />
+        <Tab.Screen name="STATUS" component={Screen} />
+        <Tab.Screen name="CALLS" component={Screen} />
+      </Tab.Navigator>
+    </View>
   );
 }
 
