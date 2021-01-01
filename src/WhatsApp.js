@@ -25,6 +25,8 @@ const colors = {
   primary: '#075e54',
   light: '#25d366',
   underlayColor: 'rgba(225, 225, 225, .3)',
+  gray: '#455A64',
+  lightGray: '#f2f2f2',
 };
 
 const Tab = createMaterialTopTabNavigator();
@@ -112,8 +114,19 @@ function TabBar({state, navigation, position}) {
           })}
         </View>
       </View>
+      {state.index === 2 && <SmallFAB />}
       <FAB index={state.index} />
     </>
+  );
+}
+
+function SmallFAB() {
+  return (
+    <RectButton style={[styles.smallfab]}>
+      <View>
+        <Icon name="edit" size={24} color={colors.gray} />
+      </View>
+    </RectButton>
   );
 }
 
@@ -253,5 +266,19 @@ const styles = StyleSheet.create({
     right: 0,
     margin: 16,
     elevation: 10,
+  },
+  smallfab: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    elevation: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.lightGray,
+    position: 'absolute',
+    right: 0,
+    bottom: FAB_SIZE,
+    marginHorizontal: 20,
+    marginVertical: 32,
   },
 });
