@@ -29,25 +29,7 @@ const colors = {
 
 const Tab = createMaterialTopTabNavigator();
 
-const Camera = () => <View style={styles.container} />;
-
-const Chats = () => (
-  <View style={styles.container}>
-    <FAB name="chat" />
-  </View>
-);
-
-const Status = () => (
-  <View style={styles.container}>
-    <FAB name="photo-camera" />
-  </View>
-);
-
-const Calls = () => (
-  <View style={styles.container}>
-    <FAB name="add-call" />
-  </View>
-);
+const Screen = () => <View style={styles.container} />;
 
 const IconButton = ({name}) => (
   <TouchableHighlight
@@ -128,14 +110,25 @@ function TabBar({state, navigation, position}) {
           );
         })}
       </View>
+      <FAB index={state.index} />
     </View>
   );
 }
 
-function FAB({name}) {
+function FAB({index}) {
+  let name;
+  if (index === 0) {
+    name = 'chat';
+  } else if (index === 1) {
+    name = 'chat';
+  } else if (index === 2) {
+    name = 'photo-camera';
+  } else if (index === 3) {
+    name = 'add-call';
+  }
   return (
     <RectButton style={styles.fab}>
-      <View key={name}>
+      <View>
         <Icon name={name} size={24} color="white" />
       </View>
     </RectButton>
@@ -174,10 +167,10 @@ export default function Home() {
       tabBar={(props) => <TabBar {...props} />}
       initialRouteName="CHATS"
       backBehavior="initialRoute">
-      <Tab.Screen name="CAMERA" component={Camera} />
-      <Tab.Screen name="CHATS" component={Chats} />
-      <Tab.Screen name="STATUS" component={Status} />
-      <Tab.Screen name="CALLS" component={Calls} />
+      <Tab.Screen name="CAMERA" component={Screen} />
+      <Tab.Screen name="CHATS" component={Screen} />
+      <Tab.Screen name="STATUS" component={Screen} />
+      <Tab.Screen name="CALLS" component={Screen} />
     </Tab.Navigator>
   );
 }
