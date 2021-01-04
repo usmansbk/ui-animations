@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Animated, {Extrapolate} from 'react-native-reanimated';
+import Animated, {Easing, Extrapolate, useValue} from 'react-native-reanimated';
 import {RectButton} from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('window');
@@ -143,44 +143,37 @@ function TabBar({state, navigation, position}) {
           ]}
         />
       </View>
-      <Animated.View
-        style={[
-          styles.smallfabContainer,
-          {
-            transform: [
-              {
-                translateY: Animated.interpolate(position, {
-                  inputRange: [0, 1, 2, 3],
-                  outputRange: [
-                    FAB_SIZE,
-                    FAB_SIZE,
-                    -FAB_SIZE / 8,
-                    -FAB_SIZE / 8,
-                  ],
-                  extrapolate: Extrapolate.CLAMP,
-                }),
-              },
-            ],
-          },
-        ]}>
-        <SmallFAB index={state.index} />
-      </Animated.View>
+      <SmallFAB index={state.index} />
       <FAB index={state.index} />
     </>
   );
 }
 
 function SmallFAB({index}) {
+  // const translateY = useValue(0);
+
   return (
-    <RectButton style={styles.smallfab}>
-      <View>
-        <Icon
-          name={index === 3 ? 'video-call' : 'edit'}
-          size={24}
-          color={colors.gray}
-        />
-      </View>
-    </RectButton>
+    <Animated.View
+      style={[
+        styles.smallfabContainer,
+        {
+          transform: [
+            {
+              translateY: index >= 2 ? 0 : FAB_SIZE,
+            },
+          ],
+        },
+      ]}>
+      <RectButton style={styles.smallfab}>
+        <View>
+          <Icon
+            name={index === 3 ? 'video-call' : 'edit'}
+            size={24}
+            color={colors.gray}
+          />
+        </View>
+      </RectButton>
+    </Animated.View>
   );
 }
 
