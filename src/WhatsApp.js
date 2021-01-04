@@ -74,6 +74,21 @@ function TabBar({state, navigation, position}) {
       return TAB_BUTTON_WIDTH * (i - 1) + CAMERA_BUTTON_WIDTH;
     }
   });
+
+  const translateYOutputRange = inputRange.map((i) => {
+    if (i === 2) {
+      return -FAB_SIZE / 8;
+    }
+    return FAB_SIZE;
+  });
+
+  const elevationOutputRange = inputRange.map((i) => {
+    if (i === 2) {
+      return 10;
+    }
+    return 0;
+  });
+
   return (
     <>
       <View style={styles.tabContainer}>
@@ -146,7 +161,28 @@ function TabBar({state, navigation, position}) {
           ]}
         />
       </View>
-      {state.index === 2 && <SmallFAB />}
+      <Animated.View
+        style={[
+          styles.smallfabContainer,
+          {
+            elevation: Animated.interpolate(position, {
+              inputRange,
+              outputRange: elevationOutputRange,
+              extrapolate: Extrapolate.CLAMP,
+            }),
+            transform: [
+              {
+                translateY: Animated.interpolate(position, {
+                  inputRange,
+                  outputRange: translateYOutputRange,
+                  extrapolate: Extrapolate.CLAMP,
+                }),
+              },
+            ],
+          },
+        ]}>
+        <SmallFAB />
+      </Animated.View>
       <FAB index={state.index} />
     </>
   );
@@ -154,7 +190,7 @@ function TabBar({state, navigation, position}) {
 
 function SmallFAB() {
   return (
-    <RectButton style={[styles.smallfab]}>
+    <RectButton style={styles.smallfab}>
       <View>
         <Icon name="edit" size={24} color={colors.gray} />
       </View>
@@ -300,18 +336,23 @@ const styles = StyleSheet.create({
     margin: 16,
     elevation: 10,
   },
-  smallfab: {
+  smallfabContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
     elevation: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.lightGray,
     position: 'absolute',
     right: 0,
     bottom: FAB_SIZE,
     marginHorizontal: 20,
-    marginVertical: 32,
+    marginVertical: 24,
+  },
+  smallfab: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.lightGray,
   },
 });
