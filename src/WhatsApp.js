@@ -110,11 +110,7 @@ function TabBar({state, navigation, position}) {
               }
             };
 
-            const opacity = Animated.interpolate(position, {
-              inputRange: [index - 1, index, index + 1],
-              outputRange: [0.5, 1, 0.5],
-              extrapolate: Extrapolate.CLAMP,
-            });
+            const opacity = index === state.index ? 1 : 0.5;
 
             if (route.name === 'CAMERA') {
               return (
@@ -224,9 +220,9 @@ function TabIconButton({isFocused, onPress, opacity}) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={isFocused ? {selected: true} : {}}>
-      <Animated.View style={[styles.iconTabButton, {opacity}]}>
+      <View style={[styles.iconTabButton, {opacity}]}>
         <Icon name="camera-alt" size={24} color="white" />
-      </Animated.View>
+      </View>
     </TouchableNativeFeedback>
   );
 }
