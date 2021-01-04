@@ -10,13 +10,14 @@ import {
 } from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Animated from 'react-native-reanimated';
+import Animated, {Extrapolate} from 'react-native-reanimated';
 import {RectButton} from 'react-native-gesture-handler';
 
 const {width} = Dimensions.get('window');
 const HEADER_HEIGHT = 56;
 const BUTTON_SIZE = 40;
 const TAB_BUTTON_WIDTH = (width - width * 0.1) / 3;
+const CAMERA_BUTTON_WIDTH = width * 0.1;
 const TAB_HEIGHT = 48;
 const INDICATOR_HEIGHT = 3;
 const FAB_SIZE = 56;
@@ -61,6 +62,18 @@ function AppBar() {
 
 function TabBar({state, navigation, position}) {
   const inputRange = state.routes.map((_, i) => i);
+  const widthOutputRange = inputRange.map((i) =>
+    i === 0 ? CAMERA_BUTTON_WIDTH : TAB_BUTTON_WIDTH,
+  );
+  const translateXOutputRange = inputRange.map((i) => {
+    if (i === 0) {
+      return 0;
+    } else if (i === 1) {
+      return CAMERA_BUTTON_WIDTH;
+    } else {
+      return TAB_BUTTON_WIDTH * (i - 1) + CAMERA_BUTTON_WIDTH;
+    }
+  });
   return (
     <>
       <View style={styles.tabContainer}>
@@ -83,9 +96,9 @@ function TabBar({state, navigation, position}) {
             };
 
             const opacity = Animated.interpolate(position, {
-              inputRange,
-              outputRange: inputRange.map((i) => (i === index ? 1 : 0.5)),
-              extrapolate: 'clamp',
+              inputRange: [index - 1, index, index + 1],
+              outputRange: [0.5, 1, 0.5],
+              extrapolate: Extrapolate.CLAMP,
             });
 
             if (route.name === 'CAMERA') {
@@ -96,7 +109,6 @@ function TabBar({state, navigation, position}) {
                     onPress={onPress}
                     opacity={opacity}
                   />
-                  <Animated.View style={[styles.indicator]} />
                 </View>
               );
             }
@@ -108,11 +120,31 @@ function TabBar({state, navigation, position}) {
                   isFocused={isFocused}
                   opacity={opacity}
                 />
-                <Animated.View style={[styles.indicator]} />
               </View>
             );
           })}
         </View>
+        <Animated.View
+          style={[
+            styles.indicator,
+            {
+              width: Animated.interpolate(position, {
+                inputRange,
+                outputRange: widthOutputRange,
+                extrapolate: Extrapolate.CLAMP,
+              }),
+              transform: [
+                {
+                  translateX: Animated.interpolate(position, {
+                    inputRange,
+                    outputRange: translateXOutputRange,
+                    extrapolate: Extrapolate.CLAMP,
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
       </View>
       {state.index === 2 && <SmallFAB />}
       <FAB index={state.index} />
