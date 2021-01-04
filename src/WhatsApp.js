@@ -75,20 +75,6 @@ function TabBar({state, navigation, position}) {
     }
   });
 
-  const translateYOutputRange = inputRange.map((i) => {
-    if (i === 2) {
-      return -FAB_SIZE / 8;
-    }
-    return FAB_SIZE;
-  });
-
-  const elevationOutputRange = inputRange.map((i) => {
-    if (i === 2) {
-      return 10;
-    }
-    return 0;
-  });
-
   return (
     <>
       <View style={styles.tabContainer}>
@@ -161,34 +147,38 @@ function TabBar({state, navigation, position}) {
         style={[
           styles.smallfabContainer,
           {
-            elevation: Animated.interpolate(position, {
-              inputRange,
-              outputRange: elevationOutputRange,
-              extrapolate: Extrapolate.CLAMP,
-            }),
             transform: [
               {
                 translateY: Animated.interpolate(position, {
-                  inputRange,
-                  outputRange: translateYOutputRange,
+                  inputRange: [0, 1, 2, 3],
+                  outputRange: [
+                    FAB_SIZE,
+                    FAB_SIZE,
+                    -FAB_SIZE / 8,
+                    -FAB_SIZE / 8,
+                  ],
                   extrapolate: Extrapolate.CLAMP,
                 }),
               },
             ],
           },
         ]}>
-        <SmallFAB />
+        <SmallFAB index={state.index} />
       </Animated.View>
       <FAB index={state.index} />
     </>
   );
 }
 
-function SmallFAB() {
+function SmallFAB({index}) {
   return (
     <RectButton style={styles.smallfab}>
       <View>
-        <Icon name="edit" size={24} color={colors.gray} />
+        <Icon
+          name={index === 3 ? 'video-call' : 'edit'}
+          size={24}
+          color={colors.gray}
+        />
       </View>
     </RectButton>
   );
@@ -336,7 +326,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    elevation: 10,
+    elevation: 4,
     position: 'absolute',
     right: 0,
     bottom: FAB_SIZE,
