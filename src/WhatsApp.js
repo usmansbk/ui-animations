@@ -214,7 +214,8 @@ export default function Home() {
       <Tab.Navigator
         tabBar={(props) => <TabBar {...props} />}
         initialRouteName="CHATS"
-        backBehavior="initialRoute">
+        backBehavior="initialRoute"
+        initialLayout={{width}}>
         <Tab.Screen name="CAMERA" component={Screen} />
         <Tab.Screen name="CHATS" component={Screen} />
         <Tab.Screen name="STATUS" component={Screen} />
