@@ -143,25 +143,28 @@ function TabBar({state, navigation, position}) {
           ]}
         />
       </View>
-      <SmallFAB index={state.index} />
+      <SmallFAB index={state.index} position={position} />
       <FAB index={state.index} />
     </>
   );
 }
 
+const FAB_POSITION = FAB_SIZE + FAB_SIZE / 3;
 function SmallFAB({index}) {
-  // const translateY = useValue(0);
-
+  const translateY = useValue(0);
+  useEffect(() => {
+    Animated.timing(translateY, {
+      duration: 50,
+      toValue: index > 1 ? 0 : FAB_POSITION,
+      easing: Easing.inOut(Easing.ease),
+    }).start();
+  }, [index, translateY]);
   return (
     <Animated.View
       style={[
         styles.smallfabContainer,
         {
-          transform: [
-            {
-              translateY: index >= 2 ? 0 : FAB_SIZE,
-            },
-          ],
+          transform: [{translateY}],
         },
       ]}>
       <RectButton style={styles.smallfab}>
@@ -322,7 +325,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     position: 'absolute',
     right: 0,
-    bottom: FAB_SIZE,
+    bottom: FAB_POSITION,
     marginHorizontal: 20,
     marginVertical: 24,
   },
