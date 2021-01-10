@@ -77,8 +77,27 @@ function TabBar({state, navigation, position}) {
 
   return (
     <>
-      <View style={styles.tabContainer}>
-        <AppBar />
+      <Animated.View
+        style={[
+          styles.tabContainer,
+          {
+            transform: [
+              {
+                translateY: Animated.interpolate(position, {
+                  inputRange: [0, 1, 2, 3],
+                  outputRange: [
+                    -(HEADER_HEIGHT + TAB_HEIGHT + INDICATOR_HEIGHT),
+                    0,
+                    0,
+                    0,
+                  ],
+                  extrapolate: Extrapolate.CLAMP,
+                }),
+              },
+            ],
+          },
+        ]}>
+        <AppBar position={position} />
         <View style={styles.tabBar}>
           {state.routes.map((route, index) => {
             const label = route.name;
@@ -142,15 +161,15 @@ function TabBar({state, navigation, position}) {
             },
           ]}
         />
-      </View>
+      </Animated.View>
       <SmallFAB index={state.index} position={position} />
-      <FAB index={state.index} />
+      <FAB index={state.index} position={position} />
     </>
   );
 }
 
 const FAB_POSITION = FAB_SIZE + FAB_SIZE / 3;
-function SmallFAB({index}) {
+function SmallFAB({index, position}) {
   const translateY = useValue(0);
   useEffect(() => {
     Animated.timing(translateY, {
@@ -164,7 +183,16 @@ function SmallFAB({index}) {
       style={[
         styles.smallfabContainer,
         {
-          transform: [{translateY}],
+          transform: [
+            {
+              translateY,
+              translateX: Animated.interpolate(position, {
+                inputRange: [0, 1, 2, 3],
+                outputRange: [FAB_POSITION, 0, 0, 0],
+                extrapolate: Extrapolate.CLAMP,
+              }),
+            },
+          ],
         },
       ]}>
       <RectButton style={styles.smallfab}>
@@ -180,7 +208,7 @@ function SmallFAB({index}) {
   );
 }
 
-function FAB({index}) {
+function FAB({index, position}) {
   let name;
   if (index === 0) {
     name = 'chat';
@@ -192,11 +220,23 @@ function FAB({index}) {
     name = 'add-call';
   }
   return (
-    <RectButton style={styles.fab}>
-      <View>
-        <Icon name={name} size={24} color="white" />
-      </View>
-    </RectButton>
+    <Animated.View
+      style={[
+        styles.fab,
+        {
+          transform: [
+            {
+              translateX: Animated.interpolate(position, {
+                inputRange: [0, 1, 2, 3],
+                outputRange: [FAB_POSITION, 0, 0, 0],
+                extrapolate: Extrapolate.CLAMP,
+              }),
+            },
+          ],
+        },
+      ]}>
+      <Icon name={name} size={24} color="white" />
+    </Animated.View>
   );
 }
 
@@ -313,10 +353,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 0,
-    right: 0,
     margin: 16,
     elevation: 10,
+    bottom: 0,
+    right: 0,
   },
   smallfabContainer: {
     width: 48,
