@@ -5,13 +5,53 @@ import {
   StatusBar,
   TouchableOpacity,
   Text,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const colors = {
   background: '#7FACDE',
-  gray: '#D4D7D4',
+  gray: '#948F7E',
 };
+
+const artists = [
+  {
+    cover:
+      'https://www.mam-e.it/wp-content/uploads/2017/07/mame-musica-coldplay-5-ragioni-per-cui-sono-una-grande-band-2-992x680.jpg',
+    name: 'Coldplay',
+    song: 'A Head full of Dreams',
+  },
+  {
+    cover:
+      'http://images.sxsw.com/ppJwLHRbjGmuYp999AiIHL8mCHc=/0x234:3646x2838/700x/images.sxsw.com/3/7efa23f6-cfc8-47bb-8850-7e9f63c1a2ba/artist-7831',
+    name: 'DNCE',
+    song: 'Cake by the Ocean',
+  },
+  {
+    cover:
+      'https://www.hellomagazine.com/imagenes/celebrities/2018100463063/westlife-confirm-new-music-tour/0-297-850/westlife-t.webp?filter=high',
+    name: 'Westlife',
+    song: 'Uptown Girl',
+  },
+  {
+    cover:
+      'https://e-cdns-images.dzcdn.net/images/cover/d61eaad8f321ea876a5f5c7219aae892/500x500.jpg',
+    name: 'Backstreet Boys',
+    song: 'Show Me The Meaning Of Being Lonely',
+  },
+  {
+    cover:
+      'https://diy-magazine.s3.amazonaws.com/d/diy/Artists/S/Spice_Girls/spice-girls-press.jpeg',
+    name: 'Spice Girls',
+    song: 'Wannabe',
+  },
+  {
+    cover:
+      'https://static.billboard.com/files/media/spice-girls-1996-billboard-650-compressed.jpg',
+    name: 'Spice Girls',
+    song: 'Viva Forever',
+  },
+];
 
 class Swipe extends React.Component {
   render() {
@@ -24,7 +64,11 @@ class Swipe extends React.Component {
         <View style={styles.header}>
           <Text style={styles.title}>Artists</Text>
         </View>
-        <View style={styles.cards}></View>
+        <View style={styles.cards}>
+          {artists.reverse().map((item, index) => {
+            return <Card {...item} key={index} />;
+          })}
+        </View>
         <View style={styles.row}>
           <Button name="close" />
           <Button name="heart" primary />
@@ -32,6 +76,18 @@ class Swipe extends React.Component {
       </View>
     );
   }
+}
+
+function Card({name, cover, song}) {
+  return (
+    <View style={[styles.card]}>
+      <Image resizeMode="cover" source={{uri: cover}} style={styles.cover} />
+      <View style={[styles.text]}>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.song}>{song}</Text>
+      </View>
+    </View>
+  );
 }
 
 const BUTTON_SIZE = 60;
@@ -53,9 +109,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   row: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    padding: 32,
+    alignItems: 'center',
   },
   button: {
     margin: 8,
@@ -71,7 +128,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'tomato',
   },
   cards: {
-    flex: 1,
+    flex: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     justifyContent: 'center',
@@ -81,6 +140,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 27,
     color: 'white',
+  },
+  card: {
+    position: 'absolute',
+    height: '100%',
+    backgroundColor: 'white',
+    width: '75%',
+    borderRadius: 8,
+    flex: 1,
+  },
+  cover: {
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    flex: 1,
+  },
+  text: {
+    padding: 16,
+  },
+  name: {
+    fontSize: 24,
+    paddingBottom: 8,
+  },
+  song: {
+    color: colors.gray,
   },
 });
 
