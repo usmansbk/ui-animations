@@ -3,10 +3,12 @@ import {
   View,
   StyleSheet,
   StatusBar,
-  TouchableOpacity,
+  TouchableHighlight,
   Text,
   Image,
   Dimensions,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -60,6 +62,24 @@ const artists = [
 ];
 
 class Swipe extends React.Component {
+  _anim = new Animated.Value(0);
+  pan = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (_e, gestureState) => {
+      this._anim.setValue(gestureState.dx);
+    },
+    onPanResponderTerminationRequest: () => true,
+    onPanResponderRelease: () => {
+      Animated.timing(this._anim, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 300,
+      }).start(() => {
+        this._anim.setValue(0);
+      });
+    },
+  });
+
   render() {
     return (
       <View style={[styles.container]}>
@@ -73,62 +93,108 @@ class Swipe extends React.Component {
         <View style={styles.cards}>
           {artists
             .slice(0, 3)
-            .map((item, index, arr) => {
+            .map(({cover, name, song}, index, arr) => {
+              const panHandlers = index === 0 ? this.pan.panHandlers : {};
+              const inputRange = [
+                (index - 1) * CARD_WIDTH,
+                index * CARD_WIDTH,
+                (index + 1) * CARD_WIDTH,
+              ];
+              const styleFirstCard =
+                index === 0
+                  ? {
+                      opacity: this._anim.interpolate({
+                        inputRange,
+                        outputRange: [0.5, 1, 0.5],
+                        extrapolate: 'clamp',
+                      }),
+                    }
+                  : {};
+              const transformFirstCard =
+                index === 0
+                  ? [
+                      {
+                        translateX: this._anim,
+                      },
+                      {
+                        rotateZ: this._anim.interpolate({
+                          inputRange,
+                          outputRange: ['-30deg', '0deg', '30deg'],
+                          extrapolate: 'clamp',
+                        }),
+                      },
+                    ]
+                  : [];
               return (
-                <Card
-                  {...item}
+                <Animated.View
+                  {...panHandlers}
                   key={index}
-                  index={index}
-                  elevation={arr.length - index}
-                />
+                  style={[
+                    styles.card,
+                    {
+                      height: CARD_HEIGHT - index * 8,
+                      width: CARD_WIDTH - index * 8,
+                      transform: [
+                        {
+                          translateY: index * 10,
+                        },
+                        ...transformFirstCard,
+                      ],
+                      elevation: arr.length - index,
+                      ...styleFirstCard,
+                    },
+                  ]}>
+                  <Image source={{uri: cover}} style={styles.cover} />
+                  <View style={[styles.text]}>
+                    <Text style={styles.name}>{name}</Text>
+                    <Text style={styles.song}>{song}</Text>
+                  </View>
+                </Animated.View>
               );
             })
             .reverse()}
         </View>
         <View style={styles.row}>
-          <Button name="close" />
-          <Button name="heart" primary />
+          <Button anim={this._anim} outputRange={[1.3, 1, 1]} name="close" />
+          <Button
+            anim={this._anim}
+            outputRange={[1, 1, 1.3]}
+            name="heart"
+            primary
+          />
         </View>
       </View>
     );
   }
 }
 
-function Card({name, cover, song, index, elevation}) {
-  return (
-    <View
-      style={[
-        styles.card,
-        {
-          height: CARD_HEIGHT - index * 8,
-          width: CARD_WIDTH - index * 8,
-          transform: [
-            {
-              translateY: index * 10,
-            },
-          ],
-          elevation,
-        },
-      ]}>
-      <Image source={{uri: cover}} style={styles.cover} />
-      <View style={[styles.text]}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.song}>{song}</Text>
-      </View>
-    </View>
-  );
-}
-
 const BUTTON_SIZE = 80;
-function Button({name, primary}) {
+function Button({name, primary, anim, onPress = () => null, outputRange = []}) {
   return (
-    <TouchableOpacity style={[styles.button, primary && styles.primaryBtn]}>
-      <Icon
-        name={name}
-        size={BUTTON_SIZE / 2}
-        color={primary ? '#fff' : '#000'}
-      />
-    </TouchableOpacity>
+    <TouchableHighlight onPress={onPress} style={styles.btnContainer}>
+      <Animated.View
+        style={[
+          styles.button,
+          primary && styles.primaryBtn,
+          {
+            transform: [
+              {
+                scale: anim.interpolate({
+                  inputRange: [-CARD_WIDTH, 0, CARD_WIDTH],
+                  outputRange,
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Icon
+          name={name}
+          size={BUTTON_SIZE / 2}
+          color={primary ? '#fff' : '#000'}
+        />
+      </Animated.View>
+    </TouchableHighlight>
   );
 }
 
@@ -143,7 +209,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    margin: 8,
     width: BUTTON_SIZE,
     height: BUTTON_SIZE,
     borderRadius: BUTTON_SIZE / 2,
@@ -151,6 +216,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     elevation: 4,
+  },
+  btnContainer: {
+    margin: 8,
+    marginHorizontal: 16,
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
+    borderRadius: BUTTON_SIZE / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   primaryBtn: {
     backgroundColor: 'tomato',
