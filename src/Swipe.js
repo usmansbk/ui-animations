@@ -187,9 +187,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     paddingBottom: 8,
     color: colors.text,
+    fontFamily: 'Raleway-Light',
   },
   song: {
     color: colors.gray,
+    fontFamily: 'Lato-Regular',
   },
 });
 
