@@ -15,6 +15,7 @@ const {height, width} = Dimensions.get('window');
 const colors = {
   background: '#7FACDE',
   gray: '#948F7E',
+  text: '#212121',
 };
 const CARD_HEIGHT = height * 0.5;
 const CARD_WIDTH = width * 0.8;
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     paddingBottom: 8,
+    color: colors.text,
   },
   song: {
     color: colors.gray,
