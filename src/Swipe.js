@@ -182,10 +182,11 @@ const styles = StyleSheet.create({
   },
   text: {
     padding: 16,
+    paddingTop: 10,
   },
   name: {
     fontSize: 24,
-    paddingBottom: 8,
+    paddingBottom: 10,
     color: colors.text,
     fontFamily: 'Raleway-Light',
   },
