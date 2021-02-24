@@ -6,13 +6,18 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const {height, width} = Dimensions.get('window');
 
 const colors = {
   background: '#7FACDE',
   gray: '#948F7E',
 };
+const CARD_HEIGHT = height * 0.5;
+const CARD_WIDTH = width * 0.8;
 
 const artists = [
   {
@@ -65,9 +70,19 @@ class Swipe extends React.Component {
           <Text style={styles.title}>Artists</Text>
         </View>
         <View style={styles.cards}>
-          {artists.reverse().map((item, index) => {
-            return <Card {...item} key={index} />;
-          })}
+          {artists
+            .slice(0, 3)
+            .map((item, index, arr) => {
+              return (
+                <Card
+                  {...item}
+                  key={index}
+                  index={index}
+                  elevation={arr.length - index}
+                />
+              );
+            })
+            .reverse()}
         </View>
         <View style={styles.row}>
           <Button name="close" />
@@ -78,10 +93,23 @@ class Swipe extends React.Component {
   }
 }
 
-function Card({name, cover, song}) {
+function Card({name, cover, song, index, elevation}) {
   return (
-    <View style={[styles.card]}>
-      <Image resizeMode="cover" source={{uri: cover}} style={styles.cover} />
+    <View
+      style={[
+        styles.card,
+        {
+          height: CARD_HEIGHT - index * 8,
+          width: CARD_WIDTH - index * 8,
+          transform: [
+            {
+              translateY: index * 10,
+            },
+          ],
+          elevation,
+        },
+      ]}>
+      <Image source={{uri: cover}} style={styles.cover} />
       <View style={[styles.text]}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.song}>{song}</Text>
@@ -90,7 +118,7 @@ function Card({name, cover, song}) {
   );
 }
 
-const BUTTON_SIZE = 60;
+const BUTTON_SIZE = 80;
 function Button({name, primary}) {
   return (
     <TouchableOpacity style={[styles.button, primary && styles.primaryBtn]}>
@@ -112,7 +140,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   button: {
     margin: 8,
@@ -143,9 +170,7 @@ const styles = StyleSheet.create({
   },
   card: {
     position: 'absolute',
-    height: '100%',
     backgroundColor: 'white',
-    width: '75%',
     borderRadius: 8,
     flex: 1,
   },
