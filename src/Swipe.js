@@ -17,7 +17,7 @@ const colors = {
   gray: '#948F7E',
   text: '#212121',
 };
-const CARD_HEIGHT = height * 0.5;
+const CARD_HEIGHT = height * 0.55;
 const CARD_WIDTH = width * 0.8;
 
 const artists = [
