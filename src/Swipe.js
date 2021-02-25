@@ -62,6 +62,9 @@ const artists = [
 ];
 
 class Swipe extends React.Component {
+  state = {
+    currentIndex: 0,
+  };
   _anim = new Animated.Value(0);
   pan = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -69,18 +72,36 @@ class Swipe extends React.Component {
       this._anim.setValue(gestureState.dx);
     },
     onPanResponderTerminationRequest: () => true,
-    onPanResponderRelease: () => {
-      Animated.timing(this._anim, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 300,
-      }).start(() => {
-        this._anim.setValue(0);
-      });
+    onPanResponderRelease: (_, {dx}) => {
+      if (Math.abs(dx) > CARD_WIDTH / 2) {
+        Animated.timing(this._anim, {
+          toValue: dx < 0 ? -CARD_WIDTH : CARD_WIDTH,
+          useNativeDriver: false,
+          duration: 300,
+        }).start(() => {
+          this.setState(
+            (prev) => ({
+              currentIndex: prev.currentIndex + 1,
+            }),
+            () => {
+              this._anim.setValue(0);
+            },
+          );
+        });
+      } else {
+        Animated.timing(this._anim, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 300,
+        }).start(() => {
+          this._anim.setValue(0);
+        });
+      }
     },
   });
 
   render() {
+    const {currentIndex} = this.state;
     return (
       <View style={[styles.container]}>
         <StatusBar
@@ -92,7 +113,7 @@ class Swipe extends React.Component {
         </View>
         <View style={styles.cards}>
           {artists
-            .slice(0, 3)
+            .slice(currentIndex, currentIndex + 3)
             .map(({cover, name, song}, index, arr) => {
               const panHandlers = index === 0 ? this.pan.panHandlers : {};
               const inputRange = [
@@ -125,6 +146,7 @@ class Swipe extends React.Component {
                       },
                     ]
                   : [];
+
               return (
                 <Animated.View
                   {...panHandlers}
@@ -132,7 +154,7 @@ class Swipe extends React.Component {
                   style={[
                     styles.card,
                     {
-                      height: CARD_HEIGHT - index * 8,
+                      height: CARD_HEIGHT - index - 1 * 8,
                       width: CARD_WIDTH - index * 8,
                       transform: [
                         {
