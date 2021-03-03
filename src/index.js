@@ -7,34 +7,14 @@ import InteractiveElements from './InteractiveElements';
 import Swipe from './Swipe';
 import TwitterProfile from './TwitterProfile';
 import WhatsApp from './WhatsApp';
+import FacebookStories from './FacebookStories';
 
 const Stack = createStackNavigator();
-
-const routes = [
-  {
-    name: 'Gmail',
-  },
-  {
-    name: 'DraggableFlatList',
-  },
-  {
-    name: 'InteractiveElements',
-  },
-  {
-    name: 'Swipe',
-  },
-  {
-    name: 'TwitterProfile',
-  },
-  {
-    name: 'WhatsApp',
-  },
-];
 
 function Home({navigation}) {
   return (
     <FlatList
-      data={routes}
+      data={routes.slice(1)}
       keyExtractor={(item) => item.name}
       renderItem={({item}) => (
         <TouchableOpacity
@@ -48,19 +28,47 @@ function Home({navigation}) {
   );
 }
 
+const routes = [
+  {
+    name: 'Home',
+    component: Home,
+  },
+  {
+    name: 'Gmail',
+    component: Gmail,
+  },
+  {
+    name: 'DraggableFlatList',
+    component: DraggableFlatList,
+  },
+  {
+    name: 'InteractiveElements',
+    component: InteractiveElements,
+  },
+  {
+    name: 'Swipe',
+    component: Swipe,
+  },
+  {
+    name: 'TwitterProfile',
+    component: TwitterProfile,
+  },
+  {
+    name: 'WhatsApp',
+    component: WhatsApp,
+  },
+  {
+    name: 'Stories',
+    component: FacebookStories,
+  },
+];
+
 export default function App() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="Gmail" component={Gmail} />
-      <Stack.Screen name="DraggableFlatList" component={DraggableFlatList} />
-      <Stack.Screen
-        name="InteractiveElements"
-        component={InteractiveElements}
-      />
-      <Stack.Screen name="Swipe" component={Swipe} />
-      <Stack.Screen name="TwitterProfile" component={TwitterProfile} />
-      <Stack.Screen name="WhatsApp" component={WhatsApp} />
+      {routes.map(({name, component}) => (
+        <Stack.Screen key={name} name={name} component={component} />
+      ))}
     </Stack.Navigator>
   );
 }

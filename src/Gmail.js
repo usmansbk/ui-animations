@@ -79,7 +79,7 @@ export default function Gmail() {
         goBack();
         return true;
       } else {
-        BackHandler.exitApp();
+        return false;
       }
     });
 
